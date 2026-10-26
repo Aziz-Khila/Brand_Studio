@@ -22,5 +22,5 @@ export function Logo({ className = "", style }: { className?: string; style?: CS
 export function logoParts(container: HTMLElement | null): Element[] {
   if (!container) return [];
   if (brand.logo.image) return [...container.querySelectorAll("[data-logo-mark]")];
-  return SplitText.create(container, { type: "chars", mask: "chars" }).chars;
+  return SplitText.create(container, { type: "words,chars", mask: "chars" }).chars;
 }

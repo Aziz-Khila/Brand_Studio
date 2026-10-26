@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useLenis } from "lenis/react";
+import { useEscape } from "@/hooks/useEscape";
 import { brand } from "@/brand";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
@@ -12,6 +14,7 @@ export function Header() {
   const { itemCount, setCartOpen, introDone } = useStore();
   const headerRef = useRef<HTMLElement>(null);
   const [inverted, setInverted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useGSAP(
     () => {
@@ -53,8 +56,17 @@ export function Header() {
         ))}
       </nav>
 
-      <div data-header-reveal className="flex items-center gap-7">
+      <div data-header-reveal className="flex items-center gap-5 md:gap-7">
         <span className="eyebrow hidden opacity-60 lg:block">{brand.season}</span>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          className="eyebrow md:hidden"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+        >
+          Menu
+        </button>
         <button
           type="button"
           onClick={() => setCartOpen(true)}
@@ -80,6 +92,79 @@ export function Header() {
           </span>
         </button>
       </div>
+
+      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </header>
+  );
+}
+
+/** Full-screen navigation for small screens, where the header has no room for the links. */
+function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEscape(onClose, open);
+  const lenis = useLenis();
+
+  useEffect(() => {
+    if (!lenis || !open) return;
+    lenis.stop();
+    return () => lenis.start();
+  }, [open, lenis]);
+
+  const go = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
+    onClose();
+    // Scrolling is paused while the menu is open, so force the jump once it starts closing.
+    requestAnimationFrame(() => {
+      if (lenis) lenis.scrollTo(href, { force: true, duration: 1.4 });
+      else document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    });
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+          data-lenis-prevent
+          className="fixed inset-0 z-[175] flex flex-col bg-ink px-5 pb-8 text-on-ink md:hidden"
+          initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+          animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+          exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
+          transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+        >
+          <div className="flex h-[var(--header-h)] shrink-0 items-center justify-between">
+            <Logo className="h-[22px]" />
+            <button type="button" autoFocus onClick={onClose} className="eyebrow">
+              Close ✕
+            </button>
+          </div>
+          <nav aria-label="Main" className="mt-[8vh] flex flex-col gap-2">
+            {brand.nav.map((link, index) => (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                onClick={(event) => go(event, link.href)}
+                className="font-display text-[clamp(48px,15vw,96px)]"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.25 + index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {link.label}
+              </motion.a>
+            ))}
+          </nav>
+          <div className="mt-auto flex items-end justify-between gap-6">
+            <p className="eyebrow max-w-[22ch] text-on-ink/60">{brand.tagline}</p>
+            <p className="eyebrow text-right text-on-ink/60">
+              {brand.season}
+              <br />
+              {brand.location}
+            </p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

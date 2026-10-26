@@ -59,7 +59,7 @@ export function Categories() {
 
   return (
     <section ref={sectionRef} id="categories" className="px-5 pb-[18vh] pt-[8vh] md:px-8">
-      <div className="flex items-end justify-between gap-6 border-b border-ink pb-6">
+      <div className="flex flex-col gap-4 border-b border-ink pb-6 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
         <div className="min-w-0">
           <div className="eyebrow mb-3 flex items-center gap-2 text-muted">
             <span>(02)</span>
@@ -75,7 +75,7 @@ export function Categories() {
             <AnimatePresence mode="wait" initial={false}>
               <motion.h2
                 key={selected?.key ?? "all"}
-                className="font-display text-[clamp(64px,11vw,190px)]"
+                className="font-display text-[clamp(48px,13vw,190px)] [overflow-wrap:anywhere] sm:text-[clamp(64px,11vw,190px)]"
                 initial={{ y: "100%" }}
                 whileInView={{ y: 0 }}
                 viewport={{ once: true }}
@@ -87,7 +87,7 @@ export function Categories() {
             </AnimatePresence>
           </div>
         </div>
-        <p className="eyebrow mb-3 shrink-0 text-right text-muted">
+        <p className="eyebrow shrink-0 text-muted sm:mb-3 sm:text-right">
           {selected ? pieces(selected.products.length) : `${categories.length} categories · ${pieces(products.length)}`}
           <br />
           {brand.season}
@@ -128,7 +128,7 @@ function CategoryList({ categories, onOpen }: { categories: Category[]; onOpen: 
               <span className="font-display relative col-span-10 text-[clamp(36px,5.4vw,84px)] transition-[translate,color] duration-700 ease-expo group-hover:translate-x-3 group-hover:text-on-ink md:col-span-6">
                 {category.label}
               </span>
-              <span className="relative col-span-10 col-start-3 flex items-center md:col-span-3 md:col-start-auto">
+              <span className="relative col-span-6 col-start-3 flex items-center md:col-span-3 md:col-start-auto">
                 {category.products.slice(0, 4).map((product, index) => (
                   <span
                     key={product.id}
@@ -144,7 +144,7 @@ function CategoryList({ categories, onOpen }: { categories: Category[]; onOpen: 
                   </span>
                 )}
               </span>
-              <span className="eyebrow relative col-span-10 col-start-3 flex items-center justify-between gap-3 transition-colors duration-500 group-hover:text-on-ink md:col-span-2 md:col-start-auto md:justify-end md:pr-3">
+              <span className="eyebrow relative col-span-4 flex items-center justify-end gap-3 transition-colors duration-500 group-hover:text-on-ink md:col-span-2 md:pr-3">
                 {pieces(category.products.length)}
                 <span className="transition-transform duration-500 ease-expo group-hover:translate-x-1">→</span>
               </span>
@@ -219,7 +219,7 @@ function ProductCard({ product }: { product: Product }) {
 
       <div className="mt-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-display line-clamp-2 text-[clamp(20px,1.8vw,28px)]">{product.name}</p>
+          <p className="font-display line-clamp-3 text-[clamp(20px,1.8vw,28px)] sm:line-clamp-2">{product.name}</p>
           <p className="eyebrow mt-1.5 text-muted">
             {product.colors.length > 1 ? `${color.name} · ${product.colors.length} colors` : color.name}
           </p>

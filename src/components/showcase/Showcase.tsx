@@ -54,6 +54,7 @@ function Carousel({ products }: { products: Product[] }) {
   };
 
   const stageRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const flipRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -90,14 +91,19 @@ function Carousel({ products }: { products: Product[] }) {
 
   useLayoutEffect(() => {
     const stage = stageRef.current!;
+    const measure = measureRef.current;
     const compute = () => {
       const vw = stage.clientWidth;
       const vh = stage.clientHeight;
       const mobile = vw < 768;
       const top = mobile ? 84 : 92;
-      const reserved = (mobile ? 236 : 226) + 44;
-      const available = Math.max(240, vh - top - reserved);
-      const width = Math.round(Math.min(available / IMAGE_RATIO, vw * (mobile ? 0.82 : 0.34), 540));
+      // Below the pieces: the dots (36px), a gap, the tallest info panel at this width, and the ticker.
+      const info = measure ? Math.max(0, ...[...measure.children].map((child) => (child as HTMLElement).offsetHeight)) : 180;
+      const ticker = parseFloat(getComputedStyle(stage).getPropertyValue("--ticker-h")) || 44;
+      const reserved = 36 + 14 + info + 26 + ticker;
+      const available = Math.max(140, vh - top - reserved);
+      const share = mobile ? 0.82 : vw < 1024 ? 0.46 : 0.34;
+      const width = Math.round(Math.min(available / IMAGE_RATIO, vw * share, 540));
       const next: Layout = {
         width,
         height: width * IMAGE_RATIO,
@@ -111,6 +117,7 @@ function Carousel({ products }: { products: Product[] }) {
     compute();
     const observer = new ResizeObserver(compute);
     observer.observe(stage);
+    if (measure) for (const child of measure.children) observer.observe(child);
     return () => observer.disconnect();
   }, []);
 
@@ -447,6 +454,27 @@ function Carousel({ products }: { products: Product[] }) {
               </div>
             </div>
           ))}
+      </div>
+
+      {/* Invisible copies of every info panel: the tallest one decides how much room the pieces leave below. */}
+      <div ref={measureRef} aria-hidden className="pointer-events-none invisible absolute inset-x-0 bottom-0">
+        {slides.map((item) =>
+          item.kind === "brand" ? (
+            <ShowcaseIntro key="brand" ready={false} pieces={products.length} onExplore={() => {}} />
+          ) : (
+            <ShowcaseInfo
+              key={item.product.id}
+              measure
+              product={item.product}
+              color={item.product.colors[0]}
+              onColorChange={() => {}}
+              side="front"
+              ready={false}
+              onSideChange={() => {}}
+              onAvailability={() => {}}
+            />
+          ),
+        )}
       </div>
 
       <p className="sr-only" aria-live="polite">

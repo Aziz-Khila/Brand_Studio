@@ -16,16 +16,19 @@ type Props = {
   ready: boolean;
   onSideChange: (side: Side) => void;
   onAvailability: () => void;
+  /** Hidden copy used only to measure the panel's height (no shared layout animation). */
+  measure?: boolean;
 };
 
-export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSideChange, onAvailability }: Props) {
+export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSideChange, onAvailability, measure }: Props) {
   const nameRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       if (!ready || !nameRef.current) return;
-      const split = SplitText.create(nameRef.current, { type: "chars", mask: "chars" });
+      // Words first so a wrapping name breaks between words, never inside one.
+      const split = SplitText.create(nameRef.current, { type: "words,chars", mask: "chars" });
       gsap.from(split.chars, {
         yPercent: 115,
         duration: 0.9,
@@ -47,7 +50,7 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
       <h2
         key={product.id}
         ref={nameRef}
-        className="font-display max-w-[16ch] text-[clamp(34px,4.4vw,68px)] md:max-w-none"
+        className="font-display max-w-[18ch] text-[clamp(28px,4.4vw,68px)] md:max-w-none"
       >
         {product.name}
       </h2>
@@ -64,7 +67,7 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
         </span>
       </div>
 
-      <div className="pointer-events-auto mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+      <div className="pointer-events-auto mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 sm:mt-5 sm:gap-x-5">
         <ColorSwatches colors={product.colors} selectedId={color.id} onSelect={onColorChange} size={16} />
         <div role="radiogroup" aria-label="Garment side" className="flex rounded-full border border-ink/20 p-[3px]">
           {(["front", "back"] as const).map((value) => {
@@ -80,7 +83,7 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
               >
                 {selected && (
                   <motion.span
-                    layoutId="showcase-side-pill"
+                    layoutId={measure ? undefined : "showcase-side-pill"}
                     className="absolute inset-0 -z-10 rounded-full bg-ink"
                     transition={{ type: "spring", stiffness: 420, damping: 36 }}
                   />
@@ -93,7 +96,8 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
           })}
         </div>
         <button type="button" onClick={onAvailability} className="eyebrow link-underline pb-0.5">
-          See availability
+          <span className="sm:hidden">Sizes</span>
+          <span className="hidden sm:inline">See availability</span>
         </button>
       </div>
     </div>
@@ -108,7 +112,7 @@ export function ShowcaseIntro({ ready, pieces, onExplore }: { ready: boolean; pi
   useGSAP(
     () => {
       if (!ready || !titleRef.current) return;
-      const split = SplitText.create(titleRef.current, { type: "chars", mask: "chars" });
+      const split = SplitText.create(titleRef.current, { type: "words,chars", mask: "chars" });
       gsap.from(split.chars, { yPercent: 115, duration: 0.9, ease: "expo.out", stagger: { each: 0.014, from: "center" } });
       gsap.from(metaRef.current, { opacity: 0, y: 10, duration: 0.7, ease: "power3.out", delay: 0.12 });
     },
@@ -122,7 +126,7 @@ export function ShowcaseIntro({ ready, pieces, onExplore }: { ready: boolean; pi
       }`}
       style={{ bottom: "calc(var(--ticker-h) + 26px)" }}
     >
-      <h2 ref={titleRef} className="font-display max-w-[18ch] text-[clamp(34px,4.4vw,68px)] md:max-w-none">
+      <h2 ref={titleRef} className="font-display max-w-[18ch] text-[clamp(28px,4.4vw,68px)] md:max-w-none">
         {brand.tagline}
       </h2>
 
@@ -132,7 +136,7 @@ export function ShowcaseIntro({ ready, pieces, onExplore }: { ready: boolean; pi
         </span>
       </div>
 
-      <div className="pointer-events-auto mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+      <div className="pointer-events-auto mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 sm:mt-5">
         <button
           type="button"
           onClick={onExplore}
@@ -141,7 +145,7 @@ export function ShowcaseIntro({ ready, pieces, onExplore }: { ready: boolean; pi
           <span className="absolute inset-0 -z-10 origin-left scale-x-0 bg-accent transition-transform duration-700 ease-expo group-hover:scale-x-100" />
           <span className="eyebrow">Explore the collection →</span>
         </button>
-        <a href="#categories" className="eyebrow link-underline pb-0.5">
+        <a href="#categories" className="eyebrow link-underline hidden pb-0.5 sm:inline">
           Shop by category
         </a>
       </div>

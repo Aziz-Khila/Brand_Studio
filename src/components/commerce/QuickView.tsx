@@ -88,7 +88,7 @@ function QuickViewPanel({ product }: { product: Product }) {
               key={`${color.id}-${side}`}
               src={color.images[side]}
               alt={`${product.name} in ${color.name}, ${side}`}
-              className="absolute inset-[8%] h-[84%] w-[84%] object-contain"
+              className="absolute left-[20%] top-[6%] h-[88%] w-[74%] object-contain md:left-[8%] md:top-[8%] md:h-[84%] md:w-[84%]"
               initial={{ opacity: 0, scale: 0.96, rotateY: side === "back" ? -25 : 25 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               exit={{ opacity: 0, scale: 0.98 }}
@@ -104,14 +104,14 @@ function QuickViewPanel({ product }: { product: Product }) {
             </span>
           )}
 
-          <div className="absolute bottom-5 left-5 flex gap-2 md:bottom-8 md:left-8">
+          <div className="absolute bottom-4 left-4 flex flex-col gap-2 md:bottom-8 md:left-8 md:flex-row">
             {(["front", "back"] as const).map((value) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setSide(value)}
                 aria-pressed={side === value}
-                className={`h-[76px] w-[64px] border bg-bg/60 p-1.5 transition-colors duration-300 ${
+                className={`h-[58px] w-[48px] border bg-bg/60 p-1 transition-colors duration-300 md:h-[76px] md:w-[64px] md:p-1.5 ${
                   side === value ? "border-ink" : "border-transparent hover:border-ink/30"
                 }`}
               >
