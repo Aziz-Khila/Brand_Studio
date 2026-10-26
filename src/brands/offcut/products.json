@@ -1,0 +1,321 @@
+[
+  {
+    "id": "web-hoodie",
+    "name": "Web Hoodie",
+    "category": "Hoodie",
+    "price": 160,
+    "description": "Heavyweight fleece hoodie with a puff-print arched logo and a tonal web screen print across the chest and pocket.",
+    "details": [
+      "Heavyweight cotton fleece",
+      "Puff-print logo",
+      "Tonal web print",
+      "Ribbed cuffs and hem"
+    ],
+    "colors": [
+      {
+        "id": "blaze-orange",
+        "name": "Blaze orange",
+        "swatch": "#f15017",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": true
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": false
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/web-hoodie-front.png",
+          "back": "/brands/offcut/products/web-hoodie-back.png"
+        }
+      },
+      {
+        "id": "forest-green",
+        "name": "Forest green",
+        "swatch": "#304031",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": true
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/forest-web-hoodie-front.png",
+          "back": "/brands/offcut/products/forest-web-hoodie-back.png"
+        }
+      }
+    ],
+    "badge": "New"
+  },
+  {
+    "id": "wide-leg-denim",
+    "name": "Wide Leg Denim",
+    "category": "Denim",
+    "price": 130,
+    "description": "High-rise wide-leg jeans in rigid washed-black denim, cut straight through the leg with a cropped hem.",
+    "details": [
+      "100% cotton rigid denim",
+      "High rise, wide leg",
+      "Five-pocket construction",
+      "Metal shank button"
+    ],
+    "colors": [
+      {
+        "id": "washed-black",
+        "name": "Washed black",
+        "swatch": "#232324",
+        "sizes": [
+          {
+            "label": "28",
+            "available": true
+          },
+          {
+            "label": "30",
+            "available": true
+          },
+          {
+            "label": "32",
+            "available": true
+          },
+          {
+            "label": "34",
+            "available": true
+          },
+          {
+            "label": "36",
+            "available": false
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/wide-leg-denim-front.png",
+          "back": "/brands/offcut/products/wide-leg-denim-back.png"
+        }
+      }
+    ]
+  },
+  {
+    "id": "parade-jacket",
+    "name": "Parade Jacket",
+    "category": "Jacket",
+    "price": 240,
+    "description": "Military-inspired band-collar jacket in washed-black cotton velvet, with braided frogging, engraved metal buttons and banded cuffs.",
+    "details": [
+      "Washed cotton velvet",
+      "Band collar, hook closure",
+      "Engraved metal buttons",
+      "Braided cuff bands"
+    ],
+    "colors": [
+      {
+        "id": "washed-black",
+        "name": "Washed black",
+        "swatch": "#181818",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": false
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/parade-jacket-front.png",
+          "back": "/brands/offcut/products/parade-jacket-back.png"
+        }
+      }
+    ],
+    "badge": "New"
+  },
+  {
+    "id": "jeans-tapered-wide-fit",
+    "name": "JEANS TAPERED WIDE FIT",
+    "category": "Pants",
+    "price": 150,
+    "description": "Relaxed fit from the hips down, slightly tapered at the hem. Regular waist. Cropped length. Stiff fabric.",
+    "details": [],
+    "colors": [
+      {
+        "id": "off-white",
+        "name": "Off-white",
+        "swatch": "#e7e2dc",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": true
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/jeans-tapered-wide-fit-front.png?v=mvpdpcts",
+          "back": "/brands/offcut/products/jeans-tapered-wide-fit-back.png?v=mvpdpcts"
+        }
+      }
+    ],
+    "badge": "Best Seller"
+  },
+  {
+    "id": "regular-fit-suede-leather-jacket",
+    "name": "REGULAR FIT SUEDE LEATHER JACKET",
+    "category": "Jacket",
+    "price": 0,
+    "description": "",
+    "details": [],
+    "colors": [
+      {
+        "id": "brown",
+        "name": "Brown",
+        "swatch": "#5c4430",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": true
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/regular-fit-suede-leather-jacket-front.png",
+          "back": "/brands/offcut/products/regular-fit-suede-leather-jacket-back.png"
+        }
+      }
+    ]
+  },
+  {
+    "id": "oversized-simple-tee",
+    "name": "OVERSIZED SIMPLE TEE",
+    "category": "T-shirt",
+    "price": 0,
+    "description": "",
+    "details": [],
+    "colors": [
+      {
+        "id": "sky-blue",
+        "name": "Sky blue",
+        "swatch": "#458abb",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": true
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/oversized-simple-tee-front.png",
+          "back": "/brands/offcut/products/oversized-simple-tee-back.png"
+        }
+      }
+    ]
+  }
+]
