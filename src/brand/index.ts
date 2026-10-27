@@ -38,9 +38,14 @@ export function formatPrice(value: number, config: BrandConfig = brand) {
   }).format(value);
 }
 
+/** Names of the two views of a product (its front and back images). */
+export function viewLabels(product: Product): Record<"front" | "back", string> {
+  return product.kind === "footwear" ? { front: "Outside", back: "Inside" } : { front: "Front", back: "Back" };
+}
+
 /** The requested color of a product, falling back to its first (default) color. */
 export function getColor(product: Product, colorId?: string | null): ProductColor {
   return product.colors.find((color) => color.id === colorId) ?? product.colors[0];
 }
 
-export type { BrandConfig, Product, ProductColor, ProductSize } from "./types";
+export type { BrandConfig, BrandContent, Product, ProductColor, ProductSize } from "./types";

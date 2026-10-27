@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Product, ProductSize } from "@/brand/types";
 import { describeColor, type GarmentAnalysis } from "@/lib/admin/analyze";
-import { GARMENT_KINDS, kindFromCategory, type GarmentKind } from "@/lib/admin/prompts";
+import { GARMENT_KINDS, isFootwearKind, kindFromCategory, type GarmentKind } from "@/lib/admin/prompts";
 import { PhotoPipeline, type Processed, type RecolorSource } from "./PhotoPipeline";
 import { ProductList } from "./ProductList";
 import { ResultPreview } from "./ResultPreview";
@@ -12,6 +12,7 @@ import { Button, Field, Section, Segmented, inputClass } from "./ui";
 const SIZE_PRESETS = {
   letters: ["XS", "S", "M", "L", "XL", "XXL"],
   waist: ["28", "30", "32", "34", "36"],
+  eu: ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"],
   one: ["One size"],
 };
 type SizePreset = keyof typeof SIZE_PRESETS | "custom";
@@ -73,7 +74,7 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
   return data as T;
 }
 
-export function AdminApp({ brandName, locale, currency }: { brandName: string; locale: string; currency: string }) {
+export function AdminApp({ locale, currency }: { locale: string; currency: string }) {
   const formatPrice = useMemo(
     () => (value: number) =>
       new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: value % 1 === 0 ? 0 : 2 }).format(value),
@@ -129,7 +130,8 @@ export function AdminApp({ brandName, locale, currency }: { brandName: string; l
       details: product.details.join("\n"),
     });
     setTouched({ id: true, category: true });
-    setKind(kindFromCategory(product.category));
+    const guess = kindFromCategory(product.category);
+    setKind(product.kind === "footwear" && !isFootwearKind(guess) ? "sneakers" : guess);
     const labels = product.colors[0]?.sizes.map((s) => s.label) ?? SIZE_PRESETS.letters;
     setSizeLabels(labels);
     setSizePreset(presetOf(labels));
@@ -206,6 +208,14 @@ export function AdminApp({ brandName, locale, currency }: { brandName: string; l
     );
   };
 
+  /** Switching between clothing and footwear on a new piece also swaps the default size run. */
+  const changeKind = (next: GarmentKind) => {
+    setKind(next);
+    if (editingId || isFootwearKind(next) === isFootwearKind(kind)) return;
+    if (isFootwearKind(next) && sizePreset === "letters") applySizes("eu", SIZE_PRESETS.eu);
+    else if (!isFootwearKind(next) && sizePreset === "eu") applySizes("letters", SIZE_PRESETS.letters);
+  };
+
   const onAnalysis = (analysis: GarmentAnalysis) => {
     if (active.name.trim()) return;
     updateColor(active.key, { name: capitalize(analysis.colorName), swatch: analysis.hex });
@@ -255,6 +265,7 @@ export function AdminApp({ brandName, locale, currency }: { brandName: string; l
             category,
             price: Number(draft.price),
             details: draft.details.split("\n"),
+            ...(isFootwearKind(kind) ? { kind: "footwear" } : {}),
             colors: colors.map((c) => ({
               id: colorId(c),
               name: c.name,
@@ -302,21 +313,9 @@ export function AdminApp({ brandName, locale, currency }: { brandName: string; l
   const showPipeline = replacing || !activeImages;
 
   return (
-    <div className="min-h-svh bg-bg text-ink">
-      <header className="sticky top-0 z-20 border-b border-ink/10 bg-bg/90 backdrop-blur">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4">
-          <p className="flex items-baseline gap-3">
-            <span className="font-display text-2xl">{brandName}</span>
-            <span className="eyebrow text-muted">Studio · Products</span>
-          </p>
-          <a href="/" target="_blank" rel="noreferrer" className="eyebrow link-underline">
-            View store ↗
-          </a>
-        </div>
-      </header>
-
-      <div className="mx-auto grid max-w-[1400px] gap-8 px-6 py-8 lg:grid-cols-[280px_1fr]">
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+    <div>
+      <div className="mx-auto grid max-w-[1400px] gap-8 px-4 py-8 md:px-6 lg:grid-cols-[280px_1fr]">
+        <aside className="lg:sticky lg:top-28 lg:self-start">
           <ProductList
             products={products}
             selectedId={editingId}
@@ -508,7 +507,7 @@ export function AdminApp({ brandName, locale, currency }: { brandName: string; l
             <PhotoPipeline
               key={`${active.key}-${pipelineRun}`}
               kind={kind}
-              onKindChange={setKind}
+              onKindChange={changeKind}
               colorName={active.name}
               swatch={active.swatch}
               sources={sources}
@@ -564,6 +563,7 @@ export function AdminApp({ brandName, locale, currency }: { brandName: string; l
                     options={[
                       { value: "letters", label: "XS–XXL" },
                       { value: "waist", label: "28–36" },
+                      { value: "eu", label: "EU 36–46" },
                       { value: "one", label: "One size" },
                       { value: "custom", label: "Custom" },
                     ]}

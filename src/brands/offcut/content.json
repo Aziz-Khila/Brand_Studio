@@ -1,0 +1,35 @@
+{
+  "tagline": "Cut from the same cloth.",
+  "season": "Drop 01 — FW26",
+  "location": "Paris",
+  "ticker": [
+    "Drop 01 out now",
+    "Paris",
+    "Cut from the same cloth",
+    "Numbered runs",
+    "Free shipping over €150",
+    "Made to outlast the season"
+  ],
+  "manifesto": {
+    "label": "Manifesto",
+    "text": "We start where the pattern ends. Every OFFCUT piece is cut in small numbered runs from heavyweight cloth, washed twice, and built to be worn until it tells your story better than ours."
+  },
+  "newsletter": {
+    "title": "Join the list",
+    "text": "First access to every drop. No noise, just the pieces."
+  },
+  "socials": [
+    {
+      "label": "Instagram",
+      "href": "https://instagram.com"
+    },
+    {
+      "label": "TikTok",
+      "href": "https://tiktok.com"
+    },
+    {
+      "label": "Pinterest",
+      "href": "https://pinterest.com"
+    }
+  ]
+}

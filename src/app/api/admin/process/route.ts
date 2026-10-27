@@ -50,6 +50,7 @@ export async function POST(request: Request) {
   if (ai === "force") args.push("--ai");
   if (ai === "off") args.push("--no-ai");
   if (form.get("hood") === "true") args.push("--hood");
+  if (form.get("footwear") === "true") args.push("--footwear");
 
   const tidy = (output: string) =>
     output

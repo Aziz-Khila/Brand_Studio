@@ -17,7 +17,7 @@ export function Section({
   aside?: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-ink/10 bg-white/35 p-6 md:p-8">
+    <section className="rounded-2xl border border-white/60 bg-white/45 p-5 shadow-[0_20px_60px_-40px_rgba(23,22,20,0.35)] backdrop-blur-xl md:p-8">
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           {step && <p className="eyebrow mb-2 text-muted">Step {step}</p>}

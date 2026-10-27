@@ -6,6 +6,7 @@ import {
   GARMENT_KINDS,
   backPrompt,
   frontPrompt,
+  isFootwearKind,
   isLightColor,
   recolorPrompt,
   type GarmentKind,
@@ -31,12 +32,13 @@ const BACKGROUND_NOTES: Record<GarmentAnalysis["background"], string> = {
   transparent: "Real transparency detected. You can skip the AI edit and process these directly.",
 };
 
-async function processPhotos(front: File, back: File, ai: string, hood: boolean): Promise<Processed> {
+async function processPhotos(front: File, back: File, ai: string, hood: boolean, footwear: boolean): Promise<Processed> {
   const form = new FormData();
   form.append("front", front);
   form.append("back", back);
   form.append("ai", ai);
   form.append("hood", String(hood));
+  form.append("footwear", String(footwear));
   const response = await fetch("/api/admin/process", { method: "POST", body: form });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw Object.assign(new Error(data.error ?? "Processing failed."), { log: data.log ?? [] });
@@ -107,6 +109,11 @@ export function PhotoPipeline({
     }
   };
 
+  const footwear = isFootwearKind(kind);
+  /** Footwear is shot as the outer and inner side of one shoe instead of a front and a back. */
+  const views = footwear
+    ? { front: "outer side", back: "inner side", Front: "Outer side", Back: "Inner side" }
+    : { front: "front", back: "back", Front: "Front", Back: "Back" };
   const promptColor = colorName.trim().toLowerCase() || analysis?.colorName || "";
   const input = { kind, colorName: promptColor, light, removeLabels };
   const source = sources.find((s) => s.key === sourceKey) ?? sources[0];
@@ -120,7 +127,7 @@ export function PhotoPipeline({
     setError(null);
     setResult(null);
     try {
-      const processed = await processPhotos(front.file, back.file, aiMode, hood);
+      const processed = await processPhotos(front.file, back.file, aiMode, hood && !footwear, footwear);
       setResult(processed);
       onProcessed(processed);
     } catch (failure) {
@@ -139,13 +146,13 @@ export function PhotoPipeline({
       >
         <div className="grid gap-6 md:grid-cols-[1fr_1fr_1.1fr]">
           <PhotoSlot
-            label="Front"
+            label={views.Front}
             url={originals.front?.url ?? null}
             onFile={(file) => setPhoto("originals", "front", file)}
             onClear={() => setPhoto("originals", "front", null)}
           />
           <PhotoSlot
-            label="Back"
+            label={views.Back}
             url={originals.back?.url ?? null}
             onFile={(file) => setPhoto("originals", "back", file)}
             onClear={() => setPhoto("originals", "back", null)}
@@ -211,11 +218,17 @@ export function PhotoPipeline({
 
         <p className="mt-6 text-sm font-semibold">From new photos</p>
         <p className="mt-1 text-sm text-muted">
-          Front prompt + original front. Then back prompt + original back + the front result, so both sides match.
+          {footwear
+            ? "One shoe, side profile. Outer side prompt + a photo of the outer side. Then inner side prompt + a photo of the inner side + the outer result, so both match."
+            : "Front prompt + original front. Then back prompt + original back + the front result, so both sides match."}
         </p>
         <div className="mt-3 grid gap-4 xl:grid-cols-2">
-          <PromptCard title="Front" attach="original front photo" text={frontPrompt(input)} />
-          <PromptCard title="Back" attach="original back photo, then the edited front" text={backPrompt(input)} />
+          <PromptCard title={views.Front} attach={`original ${views.front} photo`} text={frontPrompt(input)} />
+          <PromptCard
+            title={views.Back}
+            attach={`original ${views.back} photo, then the edited ${views.front}`}
+            text={backPrompt(input)}
+          />
         </div>
 
         <div className="mt-8 rounded-xl border border-ink/10 p-4">
@@ -264,7 +277,7 @@ export function PhotoPipeline({
               <div className="mt-4">
                 <PromptCard
                   title={`Recolor to ${colorName.trim() || "this color"}`}
-                  attach={`the ${source.name || "source"} front, then the back (one at a time)`}
+                  attach={`the ${source.name || "source"} ${views.front}, then the ${views.back} (one at a time)`}
                   text={recolorPrompt(
                     { ...input, colorName: source.name.toLowerCase(), light: isLightColor(source.swatch) },
                     { name: colorName.trim().toLowerCase(), hex: swatch, prints, printColor },
@@ -285,18 +298,18 @@ export function PhotoPipeline({
       >
         <div className="grid gap-6 md:grid-cols-[1fr_1fr_1.1fr]">
           <PhotoSlot
-            label="Edited front"
+            label={`Edited ${views.front}`}
             url={edited.front?.url ?? null}
             onFile={(file) => setPhoto("edited", "front", file)}
             onClear={() => setPhoto("edited", "front", null)}
-            placeholder={originals.front ? "Optional — the original front is used if empty" : undefined}
+            placeholder={originals.front ? `Optional — the original ${views.front} is used if empty` : undefined}
           />
           <PhotoSlot
-            label="Edited back"
+            label={`Edited ${views.back}`}
             url={edited.back?.url ?? null}
             onFile={(file) => setPhoto("edited", "back", file)}
             onClear={() => setPhoto("edited", "back", null)}
-            placeholder={originals.back ? "Optional — the original back is used if empty" : undefined}
+            placeholder={originals.back ? `Optional — the original ${views.back} is used if empty` : undefined}
           />
           <div className="space-y-4">
             <Field label="Background removal">
@@ -314,10 +327,16 @@ export function PhotoPipeline({
               Auto detects transparent, checkerboard and plain backgrounds and double-checks with a local AI model. Use “AI only” if
               something is left behind.
             </p>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={hood} onChange={(e) => setHood(e.target.checked)} />
-              Force hood framing
-            </label>
+            {footwear ? (
+              <p className="text-xs leading-relaxed text-muted">
+                Footwear framing: the shoe is centered and stands on a ground line just above the floor shadow.
+              </p>
+            ) : (
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={hood} onChange={(e) => setHood(e.target.checked)} />
+                Force hood framing
+              </label>
+            )}
             <Button onClick={run} disabled={!front || !back || processing} className="w-full py-3">
               {processing ? "Processing… (up to a minute)" : "Process photos"}
             </Button>

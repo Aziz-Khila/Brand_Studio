@@ -9,9 +9,14 @@ export type GarmentKind =
   | "pants"
   | "shorts"
   | "skirt"
-  | "dress";
+  | "dress"
+  | "sneakers"
+  | "shoes"
+  | "boots";
 
 type KindSpec = {
+  /** Footwear is shot as one shoe in side profile and framed differently (see prepare-garment --footwear). */
+  footwear?: boolean;
   label: string;
   /** Default category shown on the store. */
   category: string;
@@ -115,11 +120,43 @@ export const GARMENT_KINDS: Record<GarmentKind, KindSpec> = {
     pose: "Hanging straight and symmetrical, hem even.",
     labelSpot: "inside the neckline",
   },
+  sneakers: {
+    footwear: true,
+    label: "Sneakers",
+    category: "Sneakers",
+    noun: "sneaker",
+    parts: "the toe, the heel, the full sole and the laces",
+    pose: "Laces neatly tied, tongue straight, sole flat and level as if standing on a floor.",
+    labelSpot: "on the insole or tongue (removable tags and stickers)",
+  },
+  shoes: {
+    footwear: true,
+    label: "Shoes",
+    category: "Shoes",
+    noun: "shoe",
+    parts: "the toe, the heel and the full sole",
+    pose: "Holding its shape as if worn, no storage creases, sole flat and level as if standing on a floor.",
+    labelSpot: "on the insole or sole (removable tags and stickers)",
+  },
+  boots: {
+    footwear: true,
+    label: "Boots",
+    category: "Boots",
+    noun: "boot",
+    parts: "the full shaft, the heel and the full sole",
+    pose: "Shaft upright and unfolded, sole flat and level as if standing on a floor.",
+    labelSpot: "on the insole or shaft (removable tags and stickers)",
+  },
 };
+
+export const isFootwearKind = (kind: GarmentKind) => Boolean(GARMENT_KINDS[kind].footwear);
 
 /** Guesses the garment kind from a store category, e.g. when editing an existing piece. */
 export function kindFromCategory(category: string): GarmentKind {
   const value = category.toLowerCase();
+  if (/sneaker|trainer|runner/.test(value)) return "sneakers";
+  if (/boot/.test(value)) return "boots";
+  if (/shoe|loafer|derby|oxford|mule|sandal|slide|heel|footwear/.test(value)) return "shoes";
   if (/hood/.test(value)) return "hoodie";
   if (/sweat|crew/.test(value)) return "sweatshirt";
   if (/t-?shirt|tee/.test(value)) return "tshirt";
@@ -186,7 +223,65 @@ const QUALITY = [
   "- Portrait format (4:5), exported as PNG if possible.",
 ];
 
+/* Footwear: one shoe in strict side profile. The outer side faces right and the inner side faces left,
+   so turning the carousel card over shows the shoe turned around. */
+
+function footwearRules(input: PromptInput, side: "outer" | "inner") {
+  const spec = GARMENT_KINDS[input.kind];
+  return [
+    `- Keep the ${spec.noun} exactly as it is: same design, shape, proportions, materials, stitching, logos and colors. Do not redesign, simplify or add anything.`,
+    `- Show ONE single ${spec.noun}, not the pair.`,
+    `- Perfect side profile of its ${side} side, toe pointing to the ${side === "outer" ? "RIGHT" : "LEFT"}, camera level with the sole, no perspective tilt, no three-quarter angle.`,
+    `- The whole ${spec.noun} is visible, nothing cropped: ${spec.parts}.`,
+    `- ${spec.pose}`,
+    "- No foot, no sock, no shoe tree, no box, no tissue paper, no props.",
+    ...(input.removeLabels ? [`- Remove any brand label or sticker ${spec.labelSpot}; keep logos printed, stitched or molded on the ${spec.noun}.`] : []),
+  ];
+}
+
+const FOOTWEAR_QUALITY = [
+  "Lighting and quality:",
+  "- Soft, even studio lighting, true-to-life colors and materials, high resolution, sharp detail on the sole and stitching.",
+  "- Landscape format (4:3), exported as PNG if possible.",
+];
+
+function footwearFrontPrompt(input: PromptInput) {
+  return [
+    `Edit this photo into a clean e-commerce product image of the ${subject(input)}, outer side view.`,
+    "",
+    "Product:",
+    ...footwearRules(input, "outer"),
+    `- The ${GARMENT_KINDS[input.kind].noun} fills about 80% of the image width, centered, with even empty margins.`,
+    "",
+    "Background:",
+    ...backgroundRules(input.light),
+    "",
+    ...FOOTWEAR_QUALITY,
+  ].join("\n");
+}
+
+function footwearBackPrompt(input: PromptInput) {
+  const noun = GARMENT_KINDS[input.kind].noun;
+  return [
+    `Edit the first photo into a clean e-commerce product image of the ${subject(input)}, inner side view, matching the second image (the finished outer side view) exactly.`,
+    "",
+    "Match the outer side image:",
+    `- Same ${noun}, same size in the frame, same height of the sole, same centering, same margins.`,
+    "- Same lighting, same colors, same background.",
+    `- It should look like the same ${noun} simply turned around: toe now pointing LEFT.`,
+    "",
+    "Product:",
+    ...footwearRules(input, "inner"),
+    "",
+    "Background:",
+    ...backgroundRules(input.light),
+    "",
+    ...FOOTWEAR_QUALITY,
+  ].join("\n");
+}
+
 export function frontPrompt(input: PromptInput) {
+  if (isFootwearKind(input.kind)) return footwearFrontPrompt(input);
   return [
     `Edit this photo into a clean e-commerce product image of the ${subject(input)}, front view.`,
     "",
@@ -202,6 +297,7 @@ export function frontPrompt(input: PromptInput) {
 }
 
 export function backPrompt(input: PromptInput) {
+  if (isFootwearKind(input.kind)) return footwearBackPrompt(input);
   return [
     `Edit the first photo into a clean e-commerce product image of the ${subject(input)}, back view, matching the second image (the finished front view) exactly.`,
     "",
@@ -245,7 +341,9 @@ export function recolorPrompt(input: PromptInput, target: RecolorInput) {
     "- Keep everything else exactly identical: shape, size, position in the frame, folds, wrinkles, texture, stitching and lighting.",
     "- Keep the natural shading: darker in folds, lighter on raised areas, so it still looks like real fabric and not a flat fill.",
     `- ${prints}`,
-    "- Ribbing, cuffs, hems, linings and trims get the same new color with their texture preserved; hardware (buttons, zips, rivets) keeps its original finish.",
+    isFootwearKind(input.kind)
+      ? "- The upper takes the new color with its material texture preserved; laces and lining follow it where they matched the old color; the sole, midsole and metal eyelets keep their original color and finish."
+      : "- Ribbing, cuffs, hems, linings and trims get the same new color with their texture preserved; hardware (buttons, zips, rivets) keeps its original finish.",
     "",
     "Background:",
     `- Put the garment on ${background(light)}, even if the input is transparent or on another background.`,

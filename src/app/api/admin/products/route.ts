@@ -87,6 +87,7 @@ function readProduct(input: unknown): ProductInput | string {
     details,
     colors,
     ...(text(value, "badge") ? { badge: text(value, "badge") } : {}),
+    ...(value.kind === "footwear" ? { kind: "footwear" as const } : {}),
   };
 }
 

@@ -12,7 +12,8 @@
 // - Framing: 1280x1520 canvas, garment centred, top at 6.5% (3% for hooded pieces, detected
 //   automatically), max 88% wide, bottom no lower than 92.5%.
 //
-// Optional flags: --ai (always use the AI model), --no-ai (skip the AI check), --hood (force hood framing).
+// Optional flags: --ai (always use the AI model), --no-ai (skip the AI check), --hood (force hood framing),
+// --footwear (one shoe in side profile: framed standing on a ground line instead of from the top).
 import sharp from "sharp";
 import { execFileSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
@@ -25,7 +26,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 
 const [front, back, outDir, id, ...flags] = process.argv.slice(2);
 if (!front || !back || !outDir || !id) {
-  console.error("Usage: node scripts/prepare-garment.mjs <front> <back> <outDir> <productId> [--ai | --no-ai] [--hood]");
+  console.error("Usage: node scripts/prepare-garment.mjs <front> <back> <outDir> <productId> [--ai | --no-ai] [--hood] [--footwear]");
   process.exit(1);
 }
 
@@ -591,7 +592,13 @@ for (const [index, img] of images.entries()) {
   }
 }
 
-const TOP = flags.includes("--hood") || looksHooded(images[0]) ? 0.03 : 0.065;
+// Footwear is wide and low: same width cap, but it stands on a ground line just above the
+// carousel's floor shadow instead of hanging from the top like a garment.
+const footwear = flags.includes("--footwear");
+const FOOTWEAR_GROUND = 0.86;
+const FOOTWEAR_MAX_HEIGHT = 0.6;
+
+const TOP = footwear ? 0 : flags.includes("--hood") || looksHooded(images[0]) ? 0.03 : 0.065;
 
 const box = {
   left: Math.min(...images.map((img) => img.box.left)),
@@ -601,11 +608,13 @@ const box = {
 };
 const boxW = box.right - box.left + 1;
 const boxH = box.bottom - box.top + 1;
-const scale = Math.min((MAX_WIDTH * CANVAS_W) / boxW, ((BOTTOM - TOP) * CANVAS_H) / boxH);
+const scale = footwear
+  ? Math.min((MAX_WIDTH * CANVAS_W) / boxW, (FOOTWEAR_MAX_HEIGHT * CANVAS_H) / boxH)
+  : Math.min((MAX_WIDTH * CANVAS_W) / boxW, ((BOTTOM - TOP) * CANVAS_H) / boxH);
 const targetW = Math.round(boxW * scale);
 const targetH = Math.round(boxH * scale);
 const offsetX = Math.round((CANVAS_W - targetW) / 2);
-const offsetY = Math.round(TOP * CANVAS_H);
+const offsetY = footwear ? Math.round(FOOTWEAR_GROUND * CANVAS_H - targetH) : Math.round(TOP * CANVAS_H);
 
 mkdirSync(outDir, { recursive: true });
 

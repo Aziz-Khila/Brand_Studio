@@ -232,7 +232,7 @@
     "id": "regular-fit-suede-leather-jacket",
     "name": "REGULAR FIT SUEDE LEATHER JACKET",
     "category": "Jacket",
-    "price": 0,
+    "price": 300,
     "description": "",
     "details": [],
     "colors": [
@@ -277,7 +277,7 @@
     "id": "oversized-simple-tee",
     "name": "OVERSIZED SIMPLE TEE",
     "category": "T-shirt",
-    "price": 0,
+    "price": 80,
     "description": "",
     "details": [],
     "colors": [
@@ -317,5 +317,75 @@
         }
       }
     ]
+  },
+  {
+    "id": "nike-sb-zoom-blazer-mid",
+    "name": "Nike SB Zoom Blazer Mid",
+    "category": "Sneakers",
+    "price": 320,
+    "description": "The Nike SB Zoom Blazer Mid reimagines an iconic model to meet the needs of today's skaters. Soft cushioning and a flexible sole combine to provide excellent board grip.",
+    "details": [
+      "White on black",
+      "Comfy wear"
+    ],
+    "colors": [
+      {
+        "id": "black",
+        "name": "Black",
+        "swatch": "#2a2b2d",
+        "sizes": [
+          {
+            "label": "36",
+            "available": true
+          },
+          {
+            "label": "37",
+            "available": true
+          },
+          {
+            "label": "38",
+            "available": true
+          },
+          {
+            "label": "39",
+            "available": true
+          },
+          {
+            "label": "40",
+            "available": true
+          },
+          {
+            "label": "41",
+            "available": true
+          },
+          {
+            "label": "42",
+            "available": true
+          },
+          {
+            "label": "43",
+            "available": true
+          },
+          {
+            "label": "44",
+            "available": true
+          },
+          {
+            "label": "45",
+            "available": true
+          },
+          {
+            "label": "46",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/nike-sb-zoom-blazer-mid-black-front.png?v=mvqhz7vw",
+          "back": "/brands/offcut/products/nike-sb-zoom-blazer-mid-black-back.png?v=mvqhz7vw"
+        }
+      }
+    ],
+    "badge": "New",
+    "kind": "footwear"
   }
 ]

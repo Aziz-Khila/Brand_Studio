@@ -3,11 +3,8 @@ import type { BrandConfig } from "@/brand/types";
 const offcut: BrandConfig = {
   id: "offcut",
   name: "OFFCUT",
-  tagline: "Cut from the same cloth.",
   description:
     "OFFCUT is an independent garment studio making heavyweight essentials in small, numbered runs.",
-  location: "Paris",
-  season: "Drop 01 — FW26",
   locale: "en-GB",
   currency: "EUR",
   freeShippingThreshold: 150,
@@ -32,31 +29,12 @@ const offcut: BrandConfig = {
     displayStretch: "72%",
     displayWeight: 800,
   },
-  ticker: [
-    "Drop 01 out now",
-    "Paris",
-    "Cut from the same cloth",
-    "Numbered runs",
-    "Free shipping over €150",
-    "Made to outlast the season",
-  ],
-  manifesto: {
-    label: "Manifesto",
-    text: "We start where the pattern ends. Every OFFCUT piece is cut in small numbered runs from heavyweight cloth, washed twice, and built to be worn until it tells your story better than ours.",
-  },
   nav: [
     { label: "Collection", href: "#collection" },
     { label: "Manifesto", href: "#manifesto" },
     { label: "Categories", href: "#categories" },
   ],
-  socials: [
-    { label: "Instagram", href: "https://instagram.com" },
-    { label: "TikTok", href: "https://tiktok.com" },
-    { label: "Pinterest", href: "https://pinterest.com" },
-  ],
   footer: {
-    newsletterTitle: "Join the list",
-    newsletterText: "First access to every drop. No noise, just the pieces.",
     columns: [
       {
         title: "Shop",

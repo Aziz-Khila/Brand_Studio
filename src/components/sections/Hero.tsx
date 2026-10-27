@@ -7,9 +7,11 @@ import { useStore } from "@/components/providers/StoreProvider";
 import { Showcase } from "@/components/showcase/Showcase";
 import { Ticker } from "@/components/ui/Ticker";
 import { Logo, logoParts } from "@/components/ui/Logo";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export function Hero() {
   const { introDone } = useStore();
+  const { tagline, ticker } = useContent();
   const sectionRef = useRef<HTMLElement>(null);
   const wordmarkRef = useRef<HTMLParagraphElement>(null);
 
@@ -45,12 +47,12 @@ export function Hero() {
       </p>
 
       <h1 className="sr-only">
-        {brand.name} — {brand.tagline}
+        {brand.name} — {tagline}
       </h1>
 
       <Showcase />
 
-      <Ticker items={brand.ticker} className="absolute inset-x-0 bottom-0 z-[120]" />
+      <Ticker items={ticker} className="absolute inset-x-0 bottom-0 z-[120]" />
     </section>
   );
 }

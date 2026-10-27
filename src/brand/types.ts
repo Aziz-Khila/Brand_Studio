@@ -56,6 +56,11 @@ export type Product = {
   details: string[];
   /** At least one; the first is shown by default. */
   colors: ProductColor[];
+  /**
+   * Footwear images are the outer side (front image) and inner side (back image) of one shoe,
+   * labelled Outside / Inside on the store. Omitted for clothing (front / back).
+   */
+  kind?: "footwear";
   /** Optional badge, e.g. "New" or "Last pieces". */
   badge?: string;
 };
@@ -65,14 +70,30 @@ export type NavLink = {
   href: string;
 };
 
+/** Editable copy and links, stored next to the config in content.json (managed from /admin). */
+export type BrandContent = {
+  tagline: string;
+  /** Current season / drop label shown in the header. */
+  season: string;
+  location: string;
+  /** Messages in the moving bar under the hero. */
+  ticker: string[];
+  manifesto: {
+    label: string;
+    text: string;
+  };
+  newsletter: {
+    title: string;
+    text: string;
+  };
+  socials: NavLink[];
+};
+
 export type BrandConfig = {
   id: string;
   name: string;
-  tagline: string;
+  /** Used for search engines and link previews. */
   description: string;
-  location: string;
-  /** Current season / drop label shown in the header. */
-  season: string;
   locale: string;
   currency: string;
   /** Order subtotal (major unit) that unlocks free shipping. Omit to hide the progress bar. */
@@ -89,17 +110,9 @@ export type BrandConfig = {
   };
   colors: BrandColors;
   typography: BrandTypography;
-  ticker: string[];
-  manifesto: {
-    label: string;
-    text: string;
-  };
   nav: NavLink[];
-  socials: NavLink[];
   footer: {
-    newsletterTitle: string;
-    newsletterText: string;
     columns: { title: string; links: NavLink[] }[];
   };
-  /* Products live next to the config in products.json, see src/brand/products.ts. */
+  /* Products (products.json) and copy (content.json) live next to the config, see src/brand/products.ts and content.ts. */
 };

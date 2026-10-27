@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import { brand, formatPrice, type Product } from "@/brand";
+import { brand, formatPrice, viewLabels, type Product } from "@/brand";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useEscape } from "@/hooks/useEscape";
 import { ColorSwatches } from "./ColorSwatches";
@@ -87,7 +87,7 @@ function QuickViewPanel({ product }: { product: Product }) {
             <motion.img
               key={`${color.id}-${side}`}
               src={color.images[side]}
-              alt={`${product.name} in ${color.name}, ${side}`}
+              alt={`${product.name} in ${color.name}, ${viewLabels(product)[side].toLowerCase()}`}
               className="absolute left-[20%] top-[6%] h-[88%] w-[74%] object-contain md:left-[8%] md:top-[8%] md:h-[84%] md:w-[84%]"
               initial={{ opacity: 0, scale: 0.96, rotateY: side === "back" ? -25 : 25 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
@@ -115,7 +115,7 @@ function QuickViewPanel({ product }: { product: Product }) {
                   side === value ? "border-ink" : "border-transparent hover:border-ink/30"
                 }`}
               >
-                <img src={color.images[value]} alt={`Show ${value}`} className="h-full w-full object-contain" />
+                <img src={color.images[value]} alt={`Show ${viewLabels(product)[value].toLowerCase()}`} className="h-full w-full object-contain" />
               </button>
             ))}
           </div>

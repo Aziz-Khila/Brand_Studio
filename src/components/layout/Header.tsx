@@ -9,9 +9,11 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { ScrambleLink } from "@/components/ui/ScrambleLink";
 import { Logo } from "@/components/ui/Logo";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export function Header() {
   const { itemCount, setCartOpen, introDone } = useStore();
+  const content = useContent();
   const headerRef = useRef<HTMLElement>(null);
   const [inverted, setInverted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -74,7 +76,7 @@ export function Header() {
       </nav>
 
       <div data-header-reveal className="flex items-center gap-5 md:gap-7">
-        <span className="eyebrow hidden opacity-60 lg:block">{brand.season}</span>
+        <span className="eyebrow hidden opacity-60 lg:block">{content.season}</span>
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
@@ -119,6 +121,7 @@ export function Header() {
 function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   useEscape(onClose, open);
   const lenis = useLenis();
+  const content = useContent();
 
   useEffect(() => {
     if (!lenis || !open) return;
@@ -173,11 +176,11 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
             ))}
           </nav>
           <div className="mt-auto flex items-end justify-between gap-6">
-            <p className="eyebrow max-w-[22ch] text-on-ink/60">{brand.tagline}</p>
+            <p className="eyebrow max-w-[22ch] text-on-ink/60">{content.tagline}</p>
             <p className="eyebrow text-right text-on-ink/60">
-              {brand.season}
+              {content.season}
               <br />
-              {brand.location}
+              {content.location}
             </p>
           </div>
         </motion.div>

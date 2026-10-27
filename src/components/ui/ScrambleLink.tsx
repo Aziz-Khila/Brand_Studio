@@ -21,8 +21,17 @@ export function ScrambleLink({ href, label, className = "" }: Props) {
     });
   };
 
+  const external = /^https?:\/\//i.test(href);
+
   return (
-    <a href={href} onPointerEnter={scramble} onFocus={scramble} className={`eyebrow ${className}`}>
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noreferrer" : undefined}
+      onPointerEnter={scramble}
+      onFocus={scramble}
+      className={`eyebrow ${className}`}
+    >
       <span ref={textRef}>{label}</span>
     </a>
   );

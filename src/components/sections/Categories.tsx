@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useLenis } from "lenis/react";
-import { brand, formatPrice, type Product } from "@/brand";
+import { formatPrice, type Product } from "@/brand";
+import { useContent } from "@/components/providers/ContentProvider";
 import { ScrollTrigger } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { ColorSwatches } from "@/components/commerce/ColorSwatches";
@@ -39,6 +40,7 @@ const rise: Variants = {
 
 export function Categories() {
   const { products } = useStore();
+  const { season } = useContent();
   const categories = useMemo(() => groupByCategory(products), [products]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const selected = categories.find((c) => c.key === selectedKey) ?? null;
@@ -90,7 +92,7 @@ export function Categories() {
         <p className="eyebrow shrink-0 text-muted sm:mb-3 sm:text-right">
           {selected ? pieces(selected.products.length) : `${categories.length} categories · ${pieces(products.length)}`}
           <br />
-          {brand.season}
+          {season}
         </p>
       </div>
 

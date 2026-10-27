@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import { motion } from "motion/react";
-import { brand, formatPrice, type Product, type ProductColor } from "@/brand";
+import { formatPrice, viewLabels, type Product, type ProductColor } from "@/brand";
+import { useContent } from "@/components/providers/ContentProvider";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { ColorSwatches } from "@/components/commerce/ColorSwatches";
 
@@ -69,7 +70,7 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
 
       <div className="pointer-events-auto mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 sm:mt-5 sm:gap-x-5">
         <ColorSwatches colors={product.colors} selectedId={color.id} onSelect={onColorChange} size={16} />
-        <div role="radiogroup" aria-label="Garment side" className="flex rounded-full border border-ink/20 p-[3px]">
+        <div role="radiogroup" aria-label="View" className="flex rounded-full border border-ink/20 p-[3px]">
           {(["front", "back"] as const).map((value) => {
             const selected = side === value;
             return (
@@ -89,7 +90,7 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
                   />
                 )}
                 <span className={`eyebrow transition-colors duration-300 ${selected ? "text-on-ink" : "text-ink"}`}>
-                  {value}
+                  {viewLabels(product)[value]}
                 </span>
               </button>
             );
@@ -106,6 +107,7 @@ export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSid
 
 /** Shown under the brand mark that opens the carousel. */
 export function ShowcaseIntro({ ready, pieces, onExplore }: { ready: boolean; pieces: number; onExplore: () => void }) {
+  const content = useContent();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
 
@@ -127,12 +129,12 @@ export function ShowcaseIntro({ ready, pieces, onExplore }: { ready: boolean; pi
       style={{ bottom: "calc(var(--ticker-h) + 26px)" }}
     >
       <h2 ref={titleRef} className="font-display max-w-[18ch] text-[clamp(28px,4.4vw,68px)] md:max-w-none">
-        {brand.tagline}
+        {content.tagline}
       </h2>
 
       <div ref={metaRef} className="mt-3 text-muted">
         <span className="eyebrow">
-          {brand.season} — {pieces} pieces — {brand.location}
+          {content.season} — {pieces} pieces — {content.location}
         </span>
       </div>
 

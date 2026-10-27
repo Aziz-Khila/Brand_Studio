@@ -7,12 +7,14 @@ import { brand } from "@/brand";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { ScrambleLink } from "@/components/ui/ScrambleLink";
 import { Logo, logoParts } from "@/components/ui/Logo";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const wordmarkRef = useRef<HTMLParagraphElement>(null);
   const [subscribed, setSubscribed] = useState(false);
   const lenis = useLenis();
+  const content = useContent();
 
   useGSAP(
     () => {
@@ -44,8 +46,8 @@ export function Footer() {
     <footer ref={footerRef} id="footer" className="relative overflow-hidden bg-ink px-5 pt-[12vh] text-on-ink md:px-8">
       <div className="grid gap-14 md:grid-cols-12">
         <div className="md:col-span-6">
-          <p className="font-display text-[clamp(44px,6vw,96px)]">{brand.footer.newsletterTitle}</p>
-          <p className="mt-4 max-w-[38ch] text-on-ink/60">{brand.footer.newsletterText}</p>
+          <p className="font-display text-[clamp(44px,6vw,96px)]">{content.newsletter.title}</p>
+          <p className="mt-4 max-w-[38ch] text-on-ink/60">{content.newsletter.text}</p>
           <AnimatePresence mode="wait" initial={false}>
             {subscribed ? (
               <motion.p
@@ -97,7 +99,7 @@ export function Footer() {
           <div>
             <p className="eyebrow mb-5 text-on-ink/40">Follow</p>
             <ul className="space-y-2.5">
-              {brand.socials.map((link) => (
+              {content.socials.map((link) => (
                 <li key={link.label}>
                   <ScrambleLink href={link.href} label={link.label} />
                 </li>
@@ -117,9 +119,9 @@ export function Footer() {
           <Logo className="w-[min(78vw,520px)]" />
         </p>
         <div data-footer-tagline className="md:pb-1 md:text-right">
-          <p className="font-display max-w-[16ch] text-[clamp(28px,3.2vw,48px)] leading-[0.95] md:ml-auto">{brand.tagline}</p>
+          <p className="font-display max-w-[16ch] text-[clamp(28px,3.2vw,48px)] leading-[0.95] md:ml-auto">{content.tagline}</p>
           <p className="eyebrow mt-3 text-on-ink/50">
-            {brand.season} — {brand.location}
+            {content.season} — {content.location}
           </p>
         </div>
       </div>

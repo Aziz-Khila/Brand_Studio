@@ -3,17 +3,21 @@ import type { ReactNode } from "react";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import { brand, brandCssVariables } from "@/brand";
+import { loadContent } from "@/brand/content";
 import { fontVariables } from "@/brand/fonts";
 
-export const metadata: Metadata = {
-  title: `${brand.name} — ${brand.tagline}`,
-  description: brand.description,
-  openGraph: {
-    title: brand.name,
+export async function generateMetadata(): Promise<Metadata> {
+  const { tagline } = await loadContent();
+  return {
+    title: `${brand.name} — ${tagline}`,
     description: brand.description,
-    type: "website",
-  },
-};
+    openGraph: {
+      title: brand.name,
+      description: brand.description,
+      type: "website",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: brand.colors.background,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { brand } from "@/brand";
+import { useContent } from "@/components/providers/ContentProvider";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { Logo, logoParts } from "@/components/ui/Logo";
@@ -21,6 +21,7 @@ function preloadImages(sources: string[]) {
 
 export function Preloader() {
   const { setIntroDone, products } = useStore();
+  const content = useContent();
   const [done, setDone] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLParagraphElement>(null);
@@ -82,10 +83,10 @@ export function Preloader() {
     >
       <div className="flex justify-between">
         <span data-preloader-fade className="eyebrow opacity-60">
-          {brand.season}
+          {content.season}
         </span>
         <span data-preloader-fade className="eyebrow opacity-60">
-          {brand.location}
+          {content.location}
         </span>
       </div>
 
@@ -95,7 +96,7 @@ export function Preloader() {
 
       <div className="flex items-end justify-between gap-6">
         <span data-preloader-fade className="eyebrow max-w-[24ch] opacity-60">
-          {brand.tagline}
+          {content.tagline}
         </span>
         <div data-preloader-fade className="flex w-[min(40vw,320px)] flex-col items-end gap-3">
           <span ref={counterRef} className="font-display text-[44px] leading-none tabular-nums">
