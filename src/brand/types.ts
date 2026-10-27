@@ -93,7 +93,6 @@ export type BrandConfig = {
   manifesto: {
     label: string;
     text: string;
-    stats: { value: number; suffix?: string; label: string }[];
   };
   nav: NavLink[];
   socials: NavLink[];

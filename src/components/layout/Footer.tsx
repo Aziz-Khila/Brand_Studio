@@ -23,6 +23,14 @@ export function Footer() {
         stagger: 0.05,
         scrollTrigger: { trigger: wordmarkRef.current, start: "top 95%" },
       });
+      gsap.from("[data-footer-tagline]", {
+        y: 24,
+        opacity: 0,
+        duration: 1.2,
+        ease: "expo.out",
+        delay: 0.15,
+        scrollTrigger: { trigger: wordmarkRef.current, start: "top 95%" },
+      });
     },
     { scope: footerRef },
   );
@@ -99,9 +107,26 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mt-[10vh] flex flex-wrap items-center justify-between gap-4 border-t border-on-ink/15 py-6">
+      {/* Signature: wordmark and tagline on one baseline, then the fine print. */}
+      <div className="mt-[12vh] flex flex-col gap-8 border-t border-on-ink/15 pt-10 md:flex-row md:items-end md:justify-between md:pt-14">
+        <p
+          ref={wordmarkRef}
+          aria-hidden
+          className="font-display select-none overflow-hidden whitespace-nowrap text-[clamp(56px,9vw,140px)] leading-none"
+        >
+          <Logo className="w-[min(78vw,520px)]" />
+        </p>
+        <div data-footer-tagline className="md:pb-1 md:text-right">
+          <p className="font-display max-w-[16ch] text-[clamp(28px,3.2vw,48px)] leading-[0.95] md:ml-auto">{brand.tagline}</p>
+          <p className="eyebrow mt-3 text-on-ink/50">
+            {brand.season} — {brand.location}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-on-ink/15 py-6 md:mt-14">
         <p className="eyebrow text-on-ink/50">
-          © {new Date().getFullYear()} {brand.name} — {brand.location}
+          © {new Date().getFullYear()} {brand.name}. All rights reserved.
         </p>
         <button
           type="button"
@@ -111,16 +136,6 @@ export function Footer() {
           Back to top ↑
         </button>
       </div>
-
-      <p
-        ref={wordmarkRef}
-        aria-hidden
-        className={`font-display select-none whitespace-nowrap text-center text-[clamp(96px,27vw,520px)] ${
-          brand.logo.image ? "pb-[3vw] leading-none" : "-mb-[0.12em] leading-[0.8]"
-        }`}
-      >
-        <Logo className="w-full" />
-      </p>
     </footer>
   );
 }

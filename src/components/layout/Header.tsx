@@ -15,6 +15,16 @@ export function Header() {
   const headerRef = useRef<HTMLElement>(null);
   const [inverted, setInverted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  /** Past the top of the page: the bar gets a background so links never sit on top of content. */
+  const [solid, setSolid] = useState(false);
+  /** Scrolling down through the page tucks the bar away; any scroll up brings it back. */
+  const [tucked, setTucked] = useState(false);
+
+  useLenis(({ scroll, direction }) => {
+    setSolid(scroll > 24);
+    if (direction === 1 && scroll > window.innerHeight * 0.9) setTucked(true);
+    else if (direction === -1 || scroll < 80) setTucked(false);
+  });
 
   useGSAP(
     () => {
@@ -42,10 +52,17 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className={`fixed inset-x-0 top-0 z-[150] flex h-[var(--header-h)] items-center justify-between px-5 transition-[color,opacity] duration-500 md:px-8 ${
+      className={`fixed inset-x-0 top-0 z-[150] flex h-[var(--header-h)] items-center justify-between px-5 transition-[color,opacity,translate] duration-500 ease-expo md:px-8 ${
         inverted ? "text-on-ink" : "text-ink"
-      } ${introDone ? "opacity-100" : "opacity-0"}`}
+      } ${introDone ? "opacity-100" : "opacity-0"} ${tucked && !menuOpen ? "-translate-y-full" : ""}`}
     >
+      {/* The blur sits on its own layer: on the header itself it would trap the fixed mobile menu inside the bar. */}
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 -z-10 border-b backdrop-blur-xl transition-[opacity,background-color,border-color] duration-500 ${
+          inverted ? "border-on-ink/10 bg-ink/80" : "border-ink/10 bg-bg/80"
+        } ${solid ? "opacity-100" : "opacity-0"}`}
+      />
       <a href="#collection" data-header-reveal aria-label={`${brand.name} home`} className="font-display text-[28px] leading-none">
         <Logo className="h-[22px]" />
       </a>

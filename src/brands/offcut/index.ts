@@ -43,11 +43,6 @@ const offcut: BrandConfig = {
   manifesto: {
     label: "Manifesto",
     text: "We start where the pattern ends. Every OFFCUT piece is cut in small numbered runs from heavyweight cloth, washed twice, and built to be worn until it tells your story better than ours.",
-    stats: [
-      { value: 250, label: "Pieces per run, max" },
-      { value: 2, suffix: "×", label: "Washed before it ships" },
-      { value: 0, label: "Restocks. Ever." },
-    ],
   },
   nav: [
     { label: "Collection", href: "#collection" },

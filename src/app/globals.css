@@ -42,6 +42,9 @@
 
   html {
     scrollbar-gutter: stable;
+    /* Inherited, so drawers and panels with their own scroll match too. */
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand-ink) var(--brand-bg);
     background: var(--brand-bg);
     color: var(--brand-ink);
     -webkit-font-smoothing: antialiased;
@@ -53,6 +56,26 @@
     font-family: var(--brand-font-body);
     min-height: 100svh;
     overflow-x: clip;
+  }
+
+  /* Browsers without scrollbar-color (older Safari) get the same look through the WebKit hooks. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--brand-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--brand-ink);
+    border: 3px solid var(--brand-bg);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-accent);
   }
 
   ::selection {
