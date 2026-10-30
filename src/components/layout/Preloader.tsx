@@ -5,19 +5,7 @@ import { useContent } from "@/components/providers/ContentProvider";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { Logo, logoParts } from "@/components/ui/Logo";
-
-function preloadImages(sources: string[]) {
-  return Promise.all(
-    sources.map(
-      (src) =>
-        new Promise<void>((resolve) => {
-          const image = new Image();
-          image.onload = image.onerror = () => resolve();
-          image.src = src;
-        }),
-    ),
-  );
-}
+import { preloadProductImage } from "@/lib/productImage";
 
 export function Preloader() {
   const { setIntroDone, products } = useStore();
@@ -45,7 +33,12 @@ export function Preloader() {
         gsap.set(barRef.current, { scaleX: progress.value / 100 });
       };
 
-      const loading = preloadImages(products.flatMap(({ colors: [color] }) => [color.images.front, color.images.back]));
+      const loading = Promise.all(
+        products.flatMap(({ colors: [color] }) => [
+          preloadProductImage(color.images.front, "showcase"),
+          preloadProductImage(color.images.back, "showcase"),
+        ]),
+      );
       const minimum = new Promise((resolve) => gsap.delayedCall(1.6, resolve));
 
       const tl = gsap.timeline();
@@ -91,7 +84,7 @@ export function Preloader() {
       </div>
 
       <p ref={nameRef} className="font-display text-center text-[clamp(72px,17vw,300px)] leading-none">
-        <Logo className="w-[min(78vw,1100px)]" />
+        <Logo fit className="w-[min(78vw,1100px)]" />
       </p>
 
       <div className="flex items-end justify-between gap-6">

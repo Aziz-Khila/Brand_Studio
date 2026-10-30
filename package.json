@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "placeholders": "node scripts/generate-placeholders.mjs"
+    "export-brand": "node scripts/export-brand.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

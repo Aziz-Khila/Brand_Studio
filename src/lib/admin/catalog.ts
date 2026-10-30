@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { brand } from "@/brand";
+import { activeBrandId } from "@/brand/identity";
 import { loadProducts, productsFile } from "@/brand/products";
 import type { Product } from "@/brand/types";
 
@@ -12,9 +12,14 @@ export const adminEnabled = () => process.env.NODE_ENV !== "production";
 
 export const notFound = () => new Response("Not found", { status: 404 });
 
-export const imageDir = join(root, "public", "brands", brand.id, "products");
-export const imageUrl = (file: string) => `/brands/${brand.id}/products/${file}`;
+/** Public assets (logo, icons) of the active brand. */
+export const brandAssetDir = () => join(root, "public", "brands", activeBrandId());
+export const brandAssetUrl = (file: string) => `/brands/${activeBrandId()}/${file}`;
+
+export const imageDir = () => join(brandAssetDir(), "products");
+export const imageUrl = (file: string) => brandAssetUrl(`products/${file}`);
 export const garmentScript = join(root, "scripts", "prepare-garment.mjs");
+export const logoScript = join(root, "scripts", "prepare-logo.mjs");
 
 /** Processed images wait here until the product is saved. */
 export const workDir = join(tmpdir(), "brand-studio-admin");

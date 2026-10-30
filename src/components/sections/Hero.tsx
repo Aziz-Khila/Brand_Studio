@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { brand } from "@/brand";
+import { useBrand } from "@/components/providers/BrandProvider";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { Showcase } from "@/components/showcase/Showcase";
@@ -11,6 +11,7 @@ import { useContent } from "@/components/providers/ContentProvider";
 
 export function Hero() {
   const { introDone } = useStore();
+  const brand = useBrand();
   const { tagline, ticker } = useContent();
   const sectionRef = useRef<HTMLElement>(null);
   const wordmarkRef = useRef<HTMLParagraphElement>(null);
@@ -43,7 +44,7 @@ export function Hero() {
           introDone ? "visible" : "invisible"
         }`}
       >
-        <Logo className="w-[min(86vw,1500px)]" />
+        <Logo fit className="w-[min(86vw,1500px)]" />
       </p>
 
       <h1 className="sr-only">

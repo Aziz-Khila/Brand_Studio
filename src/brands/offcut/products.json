@@ -83,7 +83,36 @@
         }
       }
     ],
-    "badge": "New"
+    "badge": "New",
+    "fit": {
+      "type": "top",
+      "chart": {
+        "XS": {
+          "chest": 58,
+          "length": 68
+        },
+        "S": {
+          "chest": 61,
+          "length": 70
+        },
+        "M": {
+          "chest": 64,
+          "length": 72
+        },
+        "L": {
+          "chest": 67,
+          "length": 74
+        },
+        "XL": {
+          "chest": 70,
+          "length": 76
+        },
+        "XXL": {
+          "chest": 73,
+          "length": 78
+        }
+      }
+    }
   },
   {
     "id": "wide-leg-denim",
@@ -129,58 +158,37 @@
           "back": "/brands/offcut/products/wide-leg-denim-back.png"
         }
       }
-    ]
-  },
-  {
-    "id": "parade-jacket",
-    "name": "Parade Jacket",
-    "category": "Jacket",
-    "price": 240,
-    "description": "Military-inspired band-collar jacket in washed-black cotton velvet, with braided frogging, engraved metal buttons and banded cuffs.",
-    "details": [
-      "Washed cotton velvet",
-      "Band collar, hook closure",
-      "Engraved metal buttons",
-      "Braided cuff bands"
     ],
-    "colors": [
-      {
-        "id": "washed-black",
-        "name": "Washed black",
-        "swatch": "#181818",
-        "sizes": [
-          {
-            "label": "XS",
-            "available": false
-          },
-          {
-            "label": "S",
-            "available": true
-          },
-          {
-            "label": "M",
-            "available": true
-          },
-          {
-            "label": "L",
-            "available": true
-          },
-          {
-            "label": "XL",
-            "available": true
-          },
-          {
-            "label": "XXL",
-            "available": true
-          }
-        ],
-        "images": {
-          "front": "/brands/offcut/products/parade-jacket-front.png",
-          "back": "/brands/offcut/products/parade-jacket-back.png"
+    "fit": {
+      "type": "bottom",
+      "chart": {
+        "28": {
+          "waist": 36,
+          "hip": 50,
+          "inseam": 79
+        },
+        "30": {
+          "waist": 38.5,
+          "hip": 52.5,
+          "inseam": 80
+        },
+        "32": {
+          "waist": 41,
+          "hip": 55,
+          "inseam": 81
+        },
+        "34": {
+          "waist": 43.5,
+          "hip": 57.5,
+          "inseam": 82
+        },
+        "36": {
+          "waist": 46,
+          "hip": 60,
+          "inseam": 82
         }
       }
-    ],
-    "badge": "New"
+    }
   },
   {
     "id": "jeans-tapered-wide-fit",
@@ -274,6 +282,57 @@
     ]
   },
   {
+    "id": "parade-jacket",
+    "name": "Parade Jacket",
+    "category": "Jacket",
+    "price": 240,
+    "description": "Military-inspired band-collar jacket in washed-black cotton velvet, with braided frogging, engraved metal buttons and banded cuffs.",
+    "details": [
+      "Washed cotton velvet",
+      "Band collar, hook closure",
+      "Engraved metal buttons",
+      "Braided cuff bands"
+    ],
+    "colors": [
+      {
+        "id": "washed-black",
+        "name": "Washed black",
+        "swatch": "#181818",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": false
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/parade-jacket-front.png",
+          "back": "/brands/offcut/products/parade-jacket-back.png"
+        }
+      }
+    ],
+    "badge": "New"
+  },
+  {
     "id": "oversized-simple-tee",
     "name": "OVERSIZED SIMPLE TEE",
     "category": "T-shirt",
@@ -317,6 +376,151 @@
         }
       }
     ]
+  },
+  {
+    "id": "firey-tee",
+    "name": "Firey Tee",
+    "category": "T-shirt",
+    "price": 50,
+    "description": "Make a bold statement with this striking white and black t-shirt featuring an edgy flame design. Crafted from soft, breathable cotton, it showcases dramatic contrasting flame patterns that give it a fierce, high-energy streetwear look. Complete with a classic crew neck and short sleeves for effortless everyday wear.",
+    "details": [],
+    "colors": [
+      {
+        "id": "white",
+        "name": "White",
+        "swatch": "#f0f0f2",
+        "sizes": [
+          {
+            "label": "XS",
+            "available": true
+          },
+          {
+            "label": "S",
+            "available": true
+          },
+          {
+            "label": "M",
+            "available": true
+          },
+          {
+            "label": "L",
+            "available": true
+          },
+          {
+            "label": "XL",
+            "available": true
+          },
+          {
+            "label": "XXL",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/firey-tee-white-front.png?v=mvv3xffb",
+          "back": "/brands/offcut/products/firey-tee-white-back.png?v=mvv3xffb"
+        }
+      }
+    ],
+    "badge": "Super Discount",
+    "fit": {
+      "type": "top",
+      "chart": {
+        "XS": {
+          "chest": 52,
+          "length": 68
+        },
+        "S": {
+          "chest": 54,
+          "length": 70
+        },
+        "M": {
+          "chest": 57,
+          "length": 72
+        },
+        "L": {
+          "chest": 60,
+          "length": 74
+        },
+        "XL": {
+          "chest": 63,
+          "length": 76
+        },
+        "XXL": {
+          "chest": 66,
+          "length": 78
+        }
+      }
+    }
+  },
+  {
+    "id": "nike-mercurial-superfly-11-elite-sam-kerr",
+    "name": "Nike Mercurial Superfly 11 Elite \"Sam Kerr\"",
+    "category": "Football Boots",
+    "price": 500,
+    "description": "When Sam Kerr steps onto the court, nothing can stop her. Designed to make her untouchable, the Superfly 11 Elite features dynamic Air Zoom cushioning and ultra-responsive ZoomX foam. FlyWeave Ultra material, combined with powerful energy return, keeps her foot locked in place when she's in full action. This allows her to leave the defense in the dust.",
+    "details": [
+      "Green Glow/Fuchsia",
+      "Elite Class"
+    ],
+    "colors": [
+      {
+        "id": "teal",
+        "name": "Teal",
+        "swatch": "#56acb4",
+        "sizes": [
+          {
+            "label": "36",
+            "available": true
+          },
+          {
+            "label": "37",
+            "available": true
+          },
+          {
+            "label": "38",
+            "available": true
+          },
+          {
+            "label": "39",
+            "available": true
+          },
+          {
+            "label": "40",
+            "available": true
+          },
+          {
+            "label": "41",
+            "available": true
+          },
+          {
+            "label": "42",
+            "available": true
+          },
+          {
+            "label": "43",
+            "available": true
+          },
+          {
+            "label": "44",
+            "available": true
+          },
+          {
+            "label": "45",
+            "available": true
+          },
+          {
+            "label": "46",
+            "available": true
+          }
+        ],
+        "images": {
+          "front": "/brands/offcut/products/nike-mercurial-superfly-11-elite-sam-kerr-teal-front.png?v=mvv4bbg8",
+          "back": "/brands/offcut/products/nike-mercurial-superfly-11-elite-sam-kerr-teal-back.png?v=mvv4bbg8"
+        }
+      }
+    ],
+    "badge": "New",
+    "kind": "footwear"
   },
   {
     "id": "nike-sb-zoom-blazer-mid",

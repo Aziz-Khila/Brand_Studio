@@ -1,17 +1,12 @@
 import type { CSSProperties } from "react";
+import { fontFamily } from "./fontCatalog";
 import type { BrandConfig, Product, ProductColor } from "./types";
-import type { FontKey } from "./fonts";
-import offcut from "@/brands/offcut";
 
-const fontFamily = (key: FontKey) => `var(--f-${key})`;
-
-const brands: Record<string, BrandConfig> = {
-  offcut,
-};
-
-const activeId = process.env.NEXT_PUBLIC_BRAND ?? "offcut";
-
-export const brand: BrandConfig = brands[activeId] ?? offcut;
+/*
+ * Pure helpers shared by the server and the browser. The brand itself is data
+ * (src/brands/<id>/brand.json): load it with loadBrand() on the server, read it
+ * with useBrand() in client components.
+ */
 
 export function brandCssVariables(config: BrandConfig): CSSProperties {
   const { colors, typography } = config;
@@ -30,7 +25,7 @@ export function brandCssVariables(config: BrandConfig): CSSProperties {
   } as CSSProperties;
 }
 
-export function formatPrice(value: number, config: BrandConfig = brand) {
+export function formatPrice(value: number, config: Pick<BrandConfig, "locale" | "currency">) {
   return new Intl.NumberFormat(config.locale, {
     style: "currency",
     currency: config.currency,
@@ -48,4 +43,14 @@ export function getColor(product: Product, colorId?: string | null): ProductColo
   return product.colors.find((color) => color.id === colorId) ?? product.colors[0];
 }
 
-export type { BrandConfig, BrandContent, Product, ProductColor, ProductSize } from "./types";
+export type {
+  BrandConfig,
+  BrandContent,
+  FitMeasurements,
+  FooterColumn,
+  NavLink,
+  Product,
+  ProductColor,
+  ProductFit,
+  ProductSize,
+} from "./types";

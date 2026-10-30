@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import type { Product, ProductSize } from "@/brand/types";
+import { useEffect, useState } from "react";
+import type { Product, ProductFit, ProductSize } from "@/brand/types";
 import { describeColor, type GarmentAnalysis } from "@/lib/admin/analyze";
 import { GARMENT_KINDS, isFootwearKind, kindFromCategory, type GarmentKind } from "@/lib/admin/prompts";
+import { useFormatPrice } from "@/components/providers/BrandProvider";
+import { productImage } from "@/lib/productImage";
+import { SizeGuideEditor } from "./SizeGuideEditor";
 import { PhotoPipeline, type Processed, type RecolorSource } from "./PhotoPipeline";
 import { ProductList } from "./ProductList";
 import { ResultPreview } from "./ResultPreview";
@@ -16,6 +19,10 @@ const SIZE_PRESETS = {
   one: ["One size"],
 };
 type SizePreset = keyof typeof SIZE_PRESETS | "custom";
+
+/** Which size-guide measurements a garment type uses. */
+const fitTypeFor = (kind: GarmentKind): ProductFit["type"] =>
+  kind === "pants" || kind === "shorts" || kind === "skirt" ? "bottom" : kind === "dress" ? "dress" : "top";
 
 type Draft = {
   name: string;
@@ -74,12 +81,8 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
   return data as T;
 }
 
-export function AdminApp({ locale, currency }: { locale: string; currency: string }) {
-  const formatPrice = useMemo(
-    () => (value: number) =>
-      new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: value % 1 === 0 ? 0 : 2 }).format(value),
-    [locale, currency],
-  );
+export function AdminApp() {
+  const formatPrice = useFormatPrice();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -88,6 +91,7 @@ export function AdminApp({ locale, currency }: { locale: string; currency: strin
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [touched, setTouched] = useState({ id: false, category: false });
   const [kind, setKind] = useState<GarmentKind>("hoodie");
+  const [fit, setFit] = useState<ProductFit | null>(null);
   const [sizeLabels, setSizeLabels] = useState(SIZE_PRESETS.letters);
   const [sizePreset, setSizePreset] = useState<SizePreset>("letters");
 
@@ -132,6 +136,7 @@ export function AdminApp({ locale, currency }: { locale: string; currency: strin
     setTouched({ id: true, category: true });
     const guess = kindFromCategory(product.category);
     setKind(product.kind === "footwear" && !isFootwearKind(guess) ? "sneakers" : guess);
+    setFit(product.fit ?? null);
     const labels = product.colors[0]?.sizes.map((s) => s.label) ?? SIZE_PRESETS.letters;
     setSizeLabels(labels);
     setSizePreset(presetOf(labels));
@@ -154,6 +159,7 @@ export function AdminApp({ locale, currency }: { locale: string; currency: strin
     setDraft(emptyDraft());
     setTouched({ id: false, category: false });
     setKind("hoodie");
+    setFit(null);
     setSizeLabels(SIZE_PRESETS.letters);
     setSizePreset("letters");
     const first = newColor(SIZE_PRESETS.letters);
@@ -265,7 +271,7 @@ export function AdminApp({ locale, currency }: { locale: string; currency: strin
             category,
             price: Number(draft.price),
             details: draft.details.split("\n"),
-            ...(isFootwearKind(kind) ? { kind: "footwear" } : {}),
+            ...(isFootwearKind(kind) ? { kind: "footwear" } : fit ? { fit } : {}),
             colors: colors.map((c) => ({
               id: colorId(c),
               name: c.name,
@@ -358,7 +364,7 @@ export function AdminApp({ locale, currency }: { locale: string; currency: strin
                       <span className="relative block aspect-[640/760] overflow-hidden rounded-lg bg-surface/50">
                         {images ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={images.front} alt="" className="absolute inset-0 h-full w-full object-contain" />
+                          <img {...productImage(images.front, "thumb")} sizes="200px" alt="" className="absolute inset-0 h-full w-full object-contain" />
                         ) : (
                           <span className="absolute inset-0 grid place-items-center px-3 text-center text-xs text-muted">No photos yet</span>
                         )}
@@ -513,6 +519,15 @@ export function AdminApp({ locale, currency }: { locale: string; currency: strin
               sources={sources}
               onAnalysis={onAnalysis}
               onProcessed={onProcessed}
+            />
+          )}
+
+          {!isFootwearKind(kind) && (
+            <SizeGuideEditor
+              fit={fit}
+              onChange={setFit}
+              sizeLabels={sizeLabels}
+              defaultType={fitTypeFor(kind)}
             />
           )}
 

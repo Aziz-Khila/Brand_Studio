@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { brand, getColor, type Product, type ProductColor } from "@/brand";
+import { getColor, type Product, type ProductColor } from "@/brand";
+import { useBrand } from "./BrandProvider";
 
 export type CartLine = {
   productId: string;
@@ -29,7 +30,6 @@ type StoreValue = {
   quickViewProduct: Product | null;
   openQuickView: (productId: string) => void;
   closeQuickView: () => void;
-
   cartOpen: boolean;
   setCartOpen: (open: boolean) => void;
 
@@ -42,9 +42,9 @@ type StoreValue = {
 };
 
 const StoreContext = createContext<StoreValue | null>(null);
-const storageKey = `${brand.id}:cart`;
 
 export function StoreProvider({ products, children }: { products: Product[]; children: ReactNode }) {
+  const storageKey = `${useBrand().id}:cart`;
   const getProduct = useCallback(
     (productId: string) => products.find((product) => product.id === productId) ?? null,
     [products],
@@ -72,11 +72,11 @@ export function StoreProvider({ products, children }: { products: Product[]; chi
       // Ignore unreadable storage.
     }
     setHydrated(true);
-  }, [getProduct]);
+  }, [getProduct, storageKey]);
 
   useEffect(() => {
     if (hydrated) window.localStorage.setItem(storageKey, JSON.stringify(lines));
-  }, [lines, hydrated]);
+  }, [lines, hydrated, storageKey]);
 
   const selectColor = useCallback((productId: string, colorId: string) => {
     setSelectedColors((current) => (current[productId] === colorId ? current : { ...current, [productId]: colorId }));
@@ -130,7 +130,19 @@ export function StoreProvider({ products, children }: { products: Product[]; chi
       itemCount,
       subtotal,
     };
-  }, [products, getProduct, colorOf, selectColor, introDone, quickViewId, cartOpen, lines, addToCart, setQuantity, removeLine]);
+  }, [
+    products,
+    getProduct,
+    colorOf,
+    selectColor,
+    introDone,
+    quickViewId,
+    cartOpen,
+    lines,
+    addToCart,
+    setQuantity,
+    removeLine,
+  ]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

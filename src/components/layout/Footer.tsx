@@ -3,7 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLenis } from "lenis/react";
-import { brand } from "@/brand";
+import { useBrand } from "@/components/providers/BrandProvider";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { ScrambleLink } from "@/components/ui/ScrambleLink";
 import { Logo, logoParts } from "@/components/ui/Logo";
@@ -14,6 +14,7 @@ export function Footer() {
   const wordmarkRef = useRef<HTMLParagraphElement>(null);
   const [subscribed, setSubscribed] = useState(false);
   const lenis = useLenis();
+  const brand = useBrand();
   const content = useContent();
 
   useGSAP(
@@ -96,16 +97,18 @@ export function Footer() {
               </ul>
             </div>
           ))}
-          <div>
-            <p className="eyebrow mb-5 text-on-ink/40">Follow</p>
-            <ul className="space-y-2.5">
-              {content.socials.map((link) => (
-                <li key={link.label}>
-                  <ScrambleLink href={link.href} label={link.label} />
-                </li>
-              ))}
-            </ul>
-          </div>
+          {content.socials.length > 0 && (
+            <div>
+              <p className="eyebrow mb-5 text-on-ink/40">Follow</p>
+              <ul className="space-y-2.5">
+                {content.socials.map((link) => (
+                  <li key={link.label}>
+                    <ScrambleLink href={link.href} label={link.label} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 
@@ -116,7 +119,7 @@ export function Footer() {
           aria-hidden
           className="font-display select-none overflow-hidden whitespace-nowrap text-[clamp(56px,9vw,140px)] leading-none"
         >
-          <Logo className="w-[min(78vw,520px)]" />
+          <Logo fit className="w-[min(78vw,520px)]" />
         </p>
         <div data-footer-tagline className="md:pb-1 md:text-right">
           <p className="font-display max-w-[16ch] text-[clamp(28px,3.2vw,48px)] leading-[0.95] md:ml-auto">{content.tagline}</p>

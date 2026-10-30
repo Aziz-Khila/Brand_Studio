@@ -1,6 +1,6 @@
-import { access, copyFile, rm } from "node:fs/promises";
+import { access, copyFile, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
-import type { Product, ProductColor, ProductSize } from "@/brand/types";
+import type { FitMeasurements, Product, ProductColor, ProductFit, ProductSize } from "@/brand/types";
 import {
   adminEnabled,
   imageDir,
@@ -56,6 +56,37 @@ function readColor(input: unknown, index: number): ColorInput | string {
   return { id, name, swatch, sizes, images: { front: images.front as string, back: images.back as string } };
 }
 
+const FIT_TYPES = ["top", "bottom", "dress"] as const;
+const MEASUREMENTS = ["chest", "waist", "hip", "length", "inseam"] as const;
+
+/** Size guide: a known type and plausible cm values for sizes of the run (empty guides are dropped). */
+function readFit(input: unknown, sizeLabels: string[]): ProductFit | undefined | string {
+  if (input === undefined || input === null) return undefined;
+  if (typeof input !== "object") return "Invalid size guide.";
+  const value = input as Record<string, unknown>;
+  const type = FIT_TYPES.find((t) => t === value.type);
+  if (!type) return "Pick a garment type for the size guide (top, bottom or dress).";
+
+  const chart: ProductFit["chart"] = {};
+  const rawChart = (value.chart && typeof value.chart === "object" ? value.chart : {}) as Record<string, unknown>;
+  for (const label of sizeLabels) {
+    const row = rawChart[label] as Record<string, unknown> | undefined;
+    if (!row || typeof row !== "object") continue;
+    const measurements: FitMeasurements = {};
+    for (const key of MEASUREMENTS) {
+      const cm = row[key];
+      if (cm === undefined || cm === null || cm === "") continue;
+      if (typeof cm !== "number" || !Number.isFinite(cm) || cm <= 0 || cm >= 300) {
+        return `Size ${label}: ${key} must be a measurement in cm.`;
+      }
+      measurements[key] = Math.round(cm * 10) / 10;
+    }
+    if (Object.keys(measurements).length) chart[label] = measurements;
+  }
+
+  return Object.keys(chart).length ? { type, chart } : undefined;
+}
+
 function readProduct(input: unknown): ProductInput | string {
   if (!input || typeof input !== "object") return "Missing product.";
   const value = input as Record<string, unknown>;
@@ -78,6 +109,10 @@ function readProduct(input: unknown): ProductInput | string {
     colors.push(color);
   }
 
+  const footwear = value.kind === "footwear";
+  const fit = footwear ? undefined : readFit(value.fit, colors[0].sizes.map((size) => size.label));
+  if (typeof fit === "string") return fit;
+
   return {
     id,
     name,
@@ -87,7 +122,8 @@ function readProduct(input: unknown): ProductInput | string {
     details,
     colors,
     ...(text(value, "badge") ? { badge: text(value, "badge") } : {}),
-    ...(value.kind === "footwear" ? { kind: "footwear" as const } : {}),
+    ...(footwear ? { kind: "footwear" as const } : {}),
+    ...(fit ? { fit } : {}),
   };
 }
 
@@ -97,7 +133,7 @@ const filesOf = (product: Product) => product.colors.flatMap((color) => SIDES.ma
 async function removeOrphans(previous: Product[], catalog: Product[]) {
   const used = new Set(catalog.flatMap(filesOf));
   const candidates = new Set(previous.flatMap(filesOf));
-  for (const file of candidates) if (file && !used.has(file)) await rm(join(imageDir, file), { force: true });
+  for (const file of candidates) if (file && !used.has(file)) await rm(join(imageDir(), file), { force: true });
 }
 
 export async function GET() {
@@ -119,6 +155,7 @@ export async function POST(request: Request) {
   if (products.some((p, i) => p.id === input.id && i !== index)) return bad(`Another product already uses the id "${input.id}".`);
 
   const version = Date.now().toString(36);
+  await mkdir(imageDir(), { recursive: true });
   const colors: ProductColor[] = [];
   for (const { token, images, ...color } of input.colors) {
     if (token) {
@@ -127,7 +164,7 @@ export async function POST(request: Request) {
       try {
         for (const side of SIDES) {
           const file = `${input.id}-${color.id}-${side}.png`;
-          await copyFile(join(dir, `garment-${side}.png`), join(imageDir, file));
+          await copyFile(join(dir, `garment-${side}.png`), join(imageDir(), file));
           saved[side] = `${imageUrl(file)}?v=${version}`;
         }
       } catch {
@@ -137,7 +174,7 @@ export async function POST(request: Request) {
       colors.push({ ...color, images: saved });
     } else {
       try {
-        for (const side of SIDES) await access(join(imageDir, imageFileName(images![side])));
+        for (const side of SIDES) await access(join(imageDir(), imageFileName(images![side])));
       } catch {
         return bad(`${color.name}: its images are missing. Process its photos again.`);
       }

@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { brand } from "./index";
+import { activeBrandId, brandsDir } from "./identity";
 import type { Product } from "./types";
 
 /**
@@ -8,8 +8,8 @@ import type { Product } from "./types";
  * It's read from disk on every render in development, so saved changes show up on the next
  * page load; production builds bake it in at build time.
  */
-export const productsFile = (brandId = brand.id) => join(process.cwd(), "src", "brands", brandId, "products.json");
+export const productsFile = (brandId = activeBrandId()) => join(brandsDir(), brandId, "products.json");
 
-export async function loadProducts(brandId = brand.id): Promise<Product[]> {
+export async function loadProducts(brandId = activeBrandId()): Promise<Product[]> {
   return JSON.parse(await readFile(productsFile(brandId), "utf8")) as Product[];
 }

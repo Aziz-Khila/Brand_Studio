@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import { brand, formatPrice, viewLabels, type Product } from "@/brand";
+import { viewLabels, type Product } from "@/brand";
+import { useBrand, useFormatPrice } from "@/components/providers/BrandProvider";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useEscape } from "@/hooks/useEscape";
 import { ColorSwatches } from "./ColorSwatches";
+import { SizeGuide } from "./SizeGuide";
+import { productImage } from "@/lib/productImage";
 
 const EASE = [0.76, 0, 0.24, 1] as const;
 
@@ -32,6 +35,8 @@ export function QuickView() {
 
 function QuickViewPanel({ product }: { product: Product }) {
   const { closeQuickView, addToCart, setCartOpen, colorOf, selectColor } = useStore();
+  const brand = useBrand();
+  const formatPrice = useFormatPrice();
   const color = colorOf(product);
   const [side, setSide] = useState<"front" | "back">("front");
   const [size, setSize] = useState<string | null>(null);
@@ -86,7 +91,7 @@ function QuickViewPanel({ product }: { product: Product }) {
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.img
               key={`${color.id}-${side}`}
-              src={color.images[side]}
+              {...productImage(color.images[side], "quickView", { eager: true })}
               alt={`${product.name} in ${color.name}, ${viewLabels(product)[side].toLowerCase()}`}
               className="absolute left-[20%] top-[6%] h-[88%] w-[74%] object-contain md:left-[8%] md:top-[8%] md:h-[84%] md:w-[84%]"
               initial={{ opacity: 0, scale: 0.96, rotateY: side === "back" ? -25 : 25 }}
@@ -115,7 +120,7 @@ function QuickViewPanel({ product }: { product: Product }) {
                   side === value ? "border-ink" : "border-transparent hover:border-ink/30"
                 }`}
               >
-                <img src={color.images[value]} alt={`Show ${viewLabels(product)[value].toLowerCase()}`} className="h-full w-full object-contain" />
+                <img {...productImage(color.images[value], "thumb")} alt={`Show ${viewLabels(product)[value].toLowerCase()}`} className="h-full w-full object-contain" />
               </button>
             ))}
           </div>
@@ -196,6 +201,9 @@ function QuickViewPanel({ product }: { product: Product }) {
                 );
               })}
             </motion.div>
+            {product.fit && product.kind !== "footwear" && (
+              <SizeGuide fit={product.fit} sizes={color.sizes.map((option) => option.label)} selected={size} />
+            )}
           </motion.div>
 
           <motion.div variants={item} className="mt-6">

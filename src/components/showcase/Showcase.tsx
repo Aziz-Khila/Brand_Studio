@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { brand, type Product } from "@/brand";
+import type { Product } from "@/brand";
+import { useBrand } from "@/components/providers/BrandProvider";
+import { productImage } from "@/lib/productImage";
+import { useOnScreen } from "@/hooks/useOnScreen";
 import { gsap } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { ShowcaseInfo, ShowcaseIntro, type Side } from "./ShowcaseInfo";
@@ -35,6 +38,7 @@ export function Showcase() {
 
 function Carousel({ products }: { products: Product[] }) {
   const { introDone, openQuickView, quickViewProduct, cartOpen, colorOf, selectColor } = useStore();
+  const brand = useBrand();
 
   const mark = brand.logo.mark;
   const slides: Slide[] = [
@@ -54,6 +58,7 @@ function Carousel({ products }: { products: Product[] }) {
   };
 
   const stageRef = useRef<HTMLDivElement>(null);
+  const onScreen = useOnScreen(stageRef);
   const measureRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const flipRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -126,9 +131,23 @@ function Carousel({ products }: { products: Product[] }) {
   useEffect(() => {
     sim.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // Last values written per piece: unchanged styles aren't re-applied each frame.
+    const written: { filter?: string; opacity?: string; zIndex?: string; visibility?: string }[] = [];
+    const write = (el: HTMLElement, i: number, key: "filter" | "opacity" | "zIndex" | "visibility", value: string) => {
+      const last = (written[i] ??= {});
+      if (last[key] === value) return;
+      last[key] = value;
+      el.style[key] = value;
+    };
+
     const tick = (time: number, deltaMs: number) => {
       const L = layoutRef.current;
       if (!L) return;
+      // Scrolled past the hero and not moving: nothing to animate.
+      if (!onScreen.current && !sim.tween) {
+        sim.lastP = sim.p;
+        return;
+      }
       const dt = Math.min(Math.max(deltaMs / 1000, 1 / 240), 1 / 30);
 
       const velocity = (sim.p - sim.lastP) / dt;
@@ -160,10 +179,10 @@ function Carousel({ products }: { products: Product[] }) {
         const rotateX = sim.tiltX * focus;
 
         el.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) perspective(1200px) rotateY(${rotateY.toFixed(2)}deg) rotateX(${rotateX.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
-        el.style.filter = blur > 0.15 ? `blur(${blur.toFixed(2)}px)` : "none";
-        el.style.opacity = Math.min(1, opacity).toFixed(3);
-        el.style.zIndex = String(100 - Math.round(distance * 10));
-        el.style.visibility = opacity < 0.01 ? "hidden" : "visible";
+        write(el, i, "filter", blur > 0.15 ? `blur(${blur.toFixed(1)}px)` : "none");
+        write(el, i, "opacity", Math.min(1, opacity).toFixed(3));
+        write(el, i, "zIndex", String(100 - Math.round(distance * 10)));
+        write(el, i, "visibility", opacity < 0.01 ? "hidden" : "visible");
       }
 
       const index = mod(Math.round(sim.p));
@@ -175,7 +194,7 @@ function Carousel({ products }: { products: Product[] }) {
 
     gsap.ticker.add(tick);
     return () => gsap.ticker.remove(tick);
-  }, [sim]);
+  }, [sim, onScreen]);
 
   /* ------------------------------------------------------------ navigation */
 
@@ -432,19 +451,17 @@ function Carousel({ products }: { products: Product[] }) {
                     return (
                       <div key={color.id} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
                         <img
-                          src={color.images.front}
+                          {...productImage(color.images.front, "showcase", { eager: true })}
                           alt={shown ? `${item.product.name} in ${color.name}, front` : ""}
                           aria-hidden={!shown}
                           draggable={false}
-                          decoding="async"
                           className={fade}
                         />
                         <img
-                          src={color.images.back}
+                          {...productImage(color.images.back, "showcase", { eager: true })}
                           alt=""
                           aria-hidden
                           draggable={false}
-                          decoding="async"
                           className={fade}
                           style={{ transform: "rotateY(180deg)" }}
                         />

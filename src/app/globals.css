@@ -143,7 +143,23 @@
   background-position: 100% 100%;
 }
 
-@media (prefers-reduced-motion: reduce) {
+.admin-list-scroll {
+  scrollbar-color: color-mix(in srgb, var(--brand-ink) 25%, transparent) transparent;
+  mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+}
+
+.admin-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-list-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand-ink) 25%, transparent);
+  border-color: transparent;
+  background-clip: padding-box;
+}
+
+/* Phones: the grain stays but holds still; animating a blended full-screen layer drains mobile GPUs. */
+@media (prefers-reduced-motion: reduce), (hover: none) {
   .grain {
     animation: none;
   }

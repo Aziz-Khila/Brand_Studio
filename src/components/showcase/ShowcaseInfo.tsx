@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import { motion } from "motion/react";
-import { formatPrice, viewLabels, type Product, type ProductColor } from "@/brand";
+import { viewLabels, type Product, type ProductColor } from "@/brand";
+import { useFormatPrice } from "@/components/providers/BrandProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { ColorSwatches } from "@/components/commerce/ColorSwatches";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export function ShowcaseInfo({ product, color, onColorChange, side, ready, onSideChange, onAvailability, measure }: Props) {
+  const formatPrice = useFormatPrice();
   const nameRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
 

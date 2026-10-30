@@ -1,4 +1,4 @@
-import type { FontKey } from "./fonts";
+import type { FontKey } from "./fontCatalog";
 
 export type BrandColors = {
   /** Page background. */
@@ -28,6 +28,25 @@ export type BrandTypography = {
 export type ProductSize = {
   label: string;
   available: boolean;
+};
+
+/** Flat garment measurements in cm for one size (laid flat: chest and waist are half the circumference). */
+export type FitMeasurements = {
+  /** Pit to pit (tops, dresses). */
+  chest?: number;
+  /** Waistband edge to edge (bottoms). */
+  waist?: number;
+  hip?: number;
+  /** Shoulder seam to hem (tops, dresses) or waistband to hem (bottoms). */
+  length?: number;
+  inseam?: number;
+};
+
+/** Size guide: the garment's flat measurements per size label, shown to shoppers in cm. */
+export type ProductFit = {
+  /** Decides which measurements apply (tops: chest/length, bottoms: waist/hip/inseam…). */
+  type: "top" | "bottom" | "dress";
+  chart: Record<string, FitMeasurements>;
 };
 
 export type ProductColor = {
@@ -61,6 +80,8 @@ export type Product = {
    * labelled Outside / Inside on the store. Omitted for clothing (front / back).
    */
   kind?: "footwear";
+  /** Size guide in cm (clothing only). */
+  fit?: ProductFit;
   /** Optional badge, e.g. "New" or "Last pieces". */
   badge?: string;
 };
@@ -89,12 +110,17 @@ export type BrandContent = {
   socials: NavLink[];
 };
 
+export type FooterColumn = { title: string; links: NavLink[] };
+
+/** Brand identity, stored in src/brands/<id>/brand.json (managed from /admin/brand). */
 export type BrandConfig = {
   id: string;
   name: string;
-  /** Used for search engines and link previews. */
+  /** One or two sentences about the brand; the default search and link-preview description. */
   description: string;
+  /** BCP 47 locale used to format prices, e.g. "en-GB" or "fr-FR". */
   locale: string;
+  /** ISO 4217 code, e.g. "EUR". */
   currency: string;
   /** Order subtotal (major unit) that unlocks free shipping. Omit to hide the progress bar. */
   freeShippingThreshold?: number;
@@ -108,11 +134,23 @@ export type BrandConfig = {
     /** Standalone symbol (single-color SVG); when set, the carousel opens on it before the products. */
     mark?: { image: string; aspectRatio: number };
   };
+  /** Square browser-tab icon (SVG or PNG). */
+  favicon?: string;
   colors: BrandColors;
   typography: BrandTypography;
   nav: NavLink[];
   footer: {
-    columns: { title: string; links: NavLink[] }[];
+    columns: FooterColumn[];
   };
-  /* Products (products.json) and copy (content.json) live next to the config, see src/brand/products.ts and content.ts. */
+  seo?: {
+    /** Full page title; defaults to "<name> — <tagline>". */
+    title?: string;
+    /** Defaults to `description`. */
+    description?: string;
+    /** 1200×630 image shown when the site is shared. */
+    ogImage?: string;
+    /** Public address of the live site, e.g. "https://offcut.com" (needed for absolute share links). */
+    siteUrl?: string;
+  };
+  /* Products (products.json) and copy (content.json) live next to brand.json, see src/brand/products.ts and content.ts. */
 };

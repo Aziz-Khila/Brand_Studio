@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useLenis } from "lenis/react";
 import { gsap } from "@/lib/gsap";
+import { useOnScreen } from "@/hooks/useOnScreen";
 
 type Props = {
   items: string[];
@@ -14,8 +15,10 @@ type Props = {
 const COPIES = 4;
 
 export function Ticker({ items, className = "", speed = 42 }: Props) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
+  const onScreen = useOnScreen(rootRef);
   const lenis = useLenis();
   const lenisRef = useRef(lenis);
 
@@ -29,24 +32,33 @@ export function Ticker({ items, className = "", speed = 42 }: Props) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let x = 0;
     let direction = 1;
+    // Measured on resize only: reading layout every frame would force the browser to recompute it.
+    let width = copy.offsetWidth;
+    const observer = new ResizeObserver(() => {
+      width = copy.offsetWidth;
+    });
+    observer.observe(copy);
 
     const tick = (_time: number, deltaMs: number) => {
+      if (!onScreen.current) return;
       const dt = Math.min(deltaMs / 1000, 1 / 30);
       const velocity = lenisRef.current?.velocity ?? 0;
       if (Math.abs(velocity) > 0.4) direction = velocity > 0 ? 1 : -1;
       const boost = reduced ? 0 : Math.min(Math.abs(velocity) * 16, 700);
       x -= (reduced ? speed * 0.5 : speed + boost) * direction * dt;
-      const width = copy.offsetWidth;
       if (width) x = -((((-x) % width) + width) % width);
       track.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
     };
 
     gsap.ticker.add(tick);
-    return () => gsap.ticker.remove(tick);
-  }, [speed]);
+    return () => {
+      gsap.ticker.remove(tick);
+      observer.disconnect();
+    };
+  }, [speed, onScreen]);
 
   return (
-    <div className={`flex h-[var(--ticker-h)] items-center overflow-hidden bg-ink text-on-ink ${className}`}>
+    <div ref={rootRef} className={`flex h-[var(--ticker-h)] items-center overflow-hidden bg-ink text-on-ink ${className}`}>
       <div ref={trackRef} className="flex w-max will-change-transform">
         {Array.from({ length: COPIES }, (_, copyIndex) => (
           <div

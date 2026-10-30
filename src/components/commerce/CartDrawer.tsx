@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { brand, formatPrice, getColor } from "@/brand";
+import { getColor } from "@/brand";
+import { useBrand, useFormatPrice } from "@/components/providers/BrandProvider";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useEscape } from "@/hooks/useEscape";
+import { productImage } from "@/lib/productImage";
 
 const EASE = [0.76, 0, 0.24, 1] as const;
 
@@ -48,7 +50,8 @@ export function CartDrawer() {
 function CartContents({ onClose }: { onClose: () => void }) {
   const { lines, setQuantity, removeLine, subtotal, itemCount, getProduct } = useStore();
   const [notice, setNotice] = useState(false);
-  const threshold = brand.freeShippingThreshold;
+  const formatPrice = useFormatPrice();
+  const threshold = useBrand().freeShippingThreshold;
   const remaining = threshold ? Math.max(0, threshold - subtotal) : 0;
 
   return (
@@ -105,7 +108,7 @@ function CartContents({ onClose }: { onClose: () => void }) {
                     className="flex gap-4 border-b border-ink/15 py-5"
                   >
                     <div className="h-[118px] w-[96px] shrink-0 bg-surface p-2">
-                      <img src={color.images.front} alt={`${product.name} in ${color.name}`} className="h-full w-full object-contain" />
+                      <img {...productImage(color.images.front, "thumb")} alt={`${product.name} in ${color.name}`} className="h-full w-full object-contain" />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="flex items-start justify-between gap-3">

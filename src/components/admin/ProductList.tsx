@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import type { Product } from "@/brand/types";
+import { productImage } from "@/lib/productImage";
 import { Button } from "./ui";
 
 export function ProductList({
@@ -18,20 +20,33 @@ export function ProductList({
   onNew: () => void;
   onMove: (id: string, offset: -1 | 1) => void;
 }) {
+  const listRef = useRef<HTMLOListElement>(null);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    listRef.current
+      ?.querySelector(`[data-product-id="${CSS.escape(selectedId)}"]`)
+      ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [selectedId]);
+
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
+    <div className="flex flex-col lg:max-h-[calc(100dvh-9rem)]">
+      <div className="mb-2 flex shrink-0 items-center justify-between">
         <p className="eyebrow text-muted">Products · {products.length}</p>
         <Button onClick={onNew} className="px-3 py-1.5 text-xs">
           + New
         </Button>
       </div>
-      <ol className="space-y-2">
+      <ol
+        ref={listRef}
+        className="admin-list-scroll -mx-1 max-h-[55dvh] min-h-0 space-y-2 overflow-y-auto overscroll-contain px-1 py-3 lg:max-h-none lg:flex-1"
+      >
         {products.map((product, index) => {
           const active = product.id === selectedId;
           return (
             <li
               key={product.id}
+              data-product-id={product.id}
               className={`group flex items-center gap-3 rounded-xl border p-2 transition-colors ${
                 active ? "border-ink/40 bg-white/70" : "border-transparent hover:border-ink/15 hover:bg-white/40"
               }`}
@@ -39,7 +54,7 @@ export function ProductList({
               <button type="button" onClick={() => onSelect(product)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                 <span className="relative h-14 w-12 shrink-0 overflow-hidden rounded-lg bg-surface/60">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={product.colors[0].images.front} alt="" className="absolute inset-0 h-full w-full object-contain" />
+                  <img {...productImage(product.colors[0].images.front, "thumb")} alt="" className="absolute inset-0 h-full w-full object-contain" />
                 </span>
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-semibold">{product.name}</span>

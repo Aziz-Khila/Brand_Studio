@@ -7,3 +7,6 @@ next-env.d.ts
 .env*.local
 .DS_Store
 npm-debug.log*
+
+# Studio-only: which brand the local admin is editing
+src/brands/studio.json

@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useLenis } from "lenis/react";
-import { formatPrice, type Product } from "@/brand";
+import type { Product } from "@/brand";
+import { useFormatPrice } from "@/components/providers/BrandProvider";
+import { productImage } from "@/lib/productImage";
 import { useContent } from "@/components/providers/ContentProvider";
 import { ScrollTrigger } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
@@ -58,6 +60,8 @@ export function Categories() {
     const timeout = window.setTimeout(() => ScrollTrigger.refresh(), 900);
     return () => window.clearTimeout(timeout);
   }, [selectedKey]);
+
+  if (!categories.length) return null;
 
   return (
     <section ref={sectionRef} id="categories" className="px-5 pb-[18vh] pt-[8vh] md:px-8">
@@ -137,7 +141,7 @@ function CategoryList({ categories, onOpen }: { categories: Category[]; onOpen: 
                     className="-ml-3 h-14 w-12 overflow-hidden rounded-[3px] bg-surface ring-2 ring-bg transition-[translate,box-shadow] duration-500 ease-expo first:ml-0 group-hover:ring-ink md:h-[68px] md:w-14"
                     style={{ transitionDelay: `${index * 40}ms` }}
                   >
-                    <img src={colorOf(product).images.front} alt="" className="h-full w-full object-contain p-1" />
+                    <img {...productImage(colorOf(product).images.front, "thumb")} alt="" className="h-full w-full object-contain p-1" />
                   </span>
                 ))}
                 {category.products.length > 4 && (
@@ -180,6 +184,7 @@ function CategoryGrid({ category }: { category: Category }) {
 
 function ProductCard({ product }: { product: Product }) {
   const { openQuickView, colorOf, selectColor } = useStore();
+  const formatPrice = useFormatPrice();
   const color = colorOf(product);
 
   return (
@@ -203,12 +208,12 @@ function ProductCard({ product }: { product: Product }) {
             className={`absolute inset-0 transition-opacity duration-500 ${option.id === color.id ? "opacity-100" : "opacity-0"}`}
           >
             <img
-              src={option.images.front}
+              {...productImage(option.images.front, "card")}
               alt=""
               className="absolute inset-[6%] h-[88%] w-[88%] object-contain transition-[opacity,scale] duration-700 ease-expo group-hover:scale-[1.03] group-hover:opacity-0"
             />
             <img
-              src={option.images.back}
+              {...productImage(option.images.back, "card")}
               alt=""
               className="absolute inset-[6%] h-[88%] w-[88%] scale-[0.97] object-contain opacity-0 transition-[opacity,scale] duration-700 ease-expo group-hover:scale-100 group-hover:opacity-100"
             />

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLenis } from "lenis/react";
 import { useEscape } from "@/hooks/useEscape";
-import { brand } from "@/brand";
+import { useBrand } from "@/components/providers/BrandProvider";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { useStore } from "@/components/providers/StoreProvider";
 import { ScrambleLink } from "@/components/ui/ScrambleLink";
@@ -13,6 +13,7 @@ import { useContent } from "@/components/providers/ContentProvider";
 
 export function Header() {
   const { itemCount, setCartOpen, introDone } = useStore();
+  const brand = useBrand();
   const content = useContent();
   const headerRef = useRef<HTMLElement>(null);
   const [inverted, setInverted] = useState(false);
@@ -121,6 +122,7 @@ export function Header() {
 function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   useEscape(onClose, open);
   const lenis = useLenis();
+  const brand = useBrand();
   const content = useContent();
 
   useEffect(() => {
